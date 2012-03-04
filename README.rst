@@ -9,7 +9,7 @@ dojo-controller Overview
 
 **dojo-controller** is a Dojo based package that impliments the concepts of Commands and Actions in order to allow developers to easily abstract and centralise their control code in an application.
 
-This code is based on modules from `maqetta <http://maqetta.org/`_.
+This code is based on modules from `maqetta <http://maqetta.org/>`_.
 
 dojo-controller/command
 =======================
