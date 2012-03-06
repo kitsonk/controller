@@ -14,12 +14,22 @@ This code is based on modules from `maqetta <http://maqetta.org/>`_.
 dojo-controller/command
 =======================
 
-TODO - description
+This sub-package provides the modules that abstract the concept of "commands".
 
 dojo-controller/command/Command
 -------------------------------
 
-TODO - description
+An object that allows abstraction and management of "command" type logic.
+
+dojo-controller/command/CommandStack
+------------------------------------
+
+An object that handles execution of commands and puts them into a queue which then can be undone and redone as required.
+
+dojo-controller/command/CompoundCommand
+---------------------------------------
+
+A command that has several sub-commands that need can be executed and undone.
 
 dojo-controller/action
 ======================
