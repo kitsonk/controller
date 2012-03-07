@@ -1,4 +1,4 @@
-.. _dojo-contoller/README:
+.. _dojo-controller/README:
 
 ========================
 dojo-controller Overview
@@ -7,9 +7,10 @@ dojo-controller Overview
 .. contents ::
     :depth: 2
 
-**dojo-controller** is a Dojo based package that impliments the concepts of Commands and Actions in order to allow developers to easily abstract and centralise their control code in an application.
+**dojo-controller** is a Dojo based package that implements the concepts of Commands and Actions in order to allow
+developers to easily abstract and centralise their control code in an application.
 
-This code is based on modules from `maqetta <http://maqetta.org/>`_.
+This code is based on modules from `Maqetta <http://maqetta.org/>`_.
 
 dojo-controller/command
 =======================
@@ -19,7 +20,32 @@ This sub-package provides the modules that abstract the concept of "commands".
 dojo-controller/command/Command
 -------------------------------
 
-An object that allows abstraction and management of "command" type logic.
+An object that allows abstraction and management of "command" type logic. Full documentation can be found here:
+:ref:`dojo-controller/command/Command <docs/command/Command>`.
+
+Example
+~~~~~~~
+
+.. js::
+
+  require(["dojo-controller/command/Command"], function(Command){
+    var output = [];
+    var myCommand = new Command({
+      execute: function(args){
+        output.push(args.value);
+        this.inherited(arguments);
+      },
+      undo: function(){
+        output.pop();
+        this.inherited(arguments);
+      }
+    });
+    
+    myCommand.execute({ value: 0 });
+    console.log(output);
+    myCommand.undo();
+    console.log(output);
+  });
 
 dojo-controller/command/CommandStack
 ------------------------------------
