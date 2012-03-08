@@ -1,8 +1,8 @@
 define([
 		"dojo/_base/declare", // declare declare.safeMixin
 		"dojo/_base/Deferred",
-		"dojo/Evented"
-], function(declare, Deferred, Evented){
+		"../Attributed"
+], function(declare, Deferred, Attributed){
 
 // module:
 //		dojo-controller/command/Command
@@ -10,7 +10,7 @@ define([
 //		An object that allows abstraction and management of "command" 
 //		type logic.
 
-	return declare([Evented], {
+	return declare([Attributed], {
 		// summary:
 		//		An object that allows abstraction and management of "command" 
 		//		type logic.
@@ -31,6 +31,14 @@ define([
 		//		thread.
 		_executeDeferred: null,
 		
+		// _execute: Function
+		//		Private function where the Command's execute function is actually stored
+		_execute: null,
+		
+		// _undo: Function
+		//		Private function where the Command's execute function is actually stored
+		_undo: null,
+		
 		// undoable: [const] Boolean
 		//		Returns true if the Command supports the undo function.  It is assumed 
 		//		that the Command will be able to fully 
@@ -40,19 +48,23 @@ define([
 		//		Returns true if the Command can be cancelled and false if it cannot be.
 		cancelable: false,
 
-		constructor: function(/*Object?*/ args){
-			declare.safeMixin(this, args);
-			if (args.undo){
-				this.undoable = true;
-			}
-		},
-		
 		execute: function(/*Object?*/ args){
 			// summary:
 			//		Executes the command.
-			// tags:
-			//		extension
+			if (typeof this._execute === "function"){
+				this._execute(args);
+			}
 			this.emit("execute", { args: args });
+		},
+		_setExecute: function(value){
+			// summary:
+			//		Set the execute function
+			this._execute = value;
+		},
+		_getExecute: function(){
+			// summary:
+			//		Get the execute function
+			return this._execute;
 		},
 		
 		cancel: function(){
@@ -64,9 +76,23 @@ define([
 		undo: function(){
 			// summary:
 			//		Undos whatever .execute did.
-			// tags:
-			//		extension
+			if (typeof this._undo === "function"){
+				result = this._undo();
+			}
 			this.emit("undo", {});
+			return result;
+		},
+		_setUndo: function(value){
+			// summary:
+			//		Set the undo function
+			this.undoable = value ? true : false;
+			this._undo = value;
+		},
+		_getUndo: function(){
+			// summary:
+			//		Get the undo function
+			return this._undo;
 		}
+		
 	});
 });

@@ -68,3 +68,7 @@ dojo-controller/action/Action
 dojo-controller/action/_ActionWidgetMixin
 -----------------------------------------
 
+dojo-controller/Attributed
+==========================
+
+An class that combines ``dojo/Evented`` and ``dojo/Stateful`` and then adds in the concept of attributes that have auto-magically recognised getters and setters.  This is similar to the attribute getter and setter functionality in ``dijit/_WidgetBase``.

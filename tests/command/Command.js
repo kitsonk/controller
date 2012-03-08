@@ -32,11 +32,9 @@ doh.register("tests.command.Command",
 			var command1 = new Command({
 				execute: function() {
 					output.push(1);
-					this.inherited(arguments);
 				},
 				undo: function() {
 					output.push(2);
-					this.inherited(arguments);
 				}
 			});
 			command1.on("execute", function(){
