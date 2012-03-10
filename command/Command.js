@@ -1,8 +1,8 @@
 define([
 		"dojo/_base/declare", // declare declare.safeMixin
-		"dojo/_base/Deferred",
+		"dojo/Evented",
 		"../Attributed"
-], function(declare, Deferred, Attributed){
+], function(declare, Evented, Attributed){
 
 // module:
 //		dojo-controller/command/Command
@@ -10,7 +10,7 @@ define([
 //		An object that allows abstraction and management of "command" 
 //		type logic.
 
-	return declare([Attributed], {
+	return declare([Evented, Attributed], {
 		// summary:
 		//		An object that allows abstraction and management of "command" 
 		//		type logic.
@@ -30,6 +30,11 @@ define([
 		//		Used for storing internally any Deferred used to operate the execute 
 		//		thread.
 		_executeDeferred: null,
+		
+		// _undoDeferred: Deferred
+		//		Used for storing internally any Deferred used to operate the undo
+		//		thread.
+		_undoDeferred: null,
 		
 		// _execute: Function
 		//		Private function where the Command's execute function is actually stored
@@ -52,9 +57,20 @@ define([
 			// summary:
 			//		Executes the command.
 			if (typeof this._execute === "function"){
-				this._execute(args);
+				result = this._execute(args);
+				if (result && typeof result.then === "function"){
+					var self = this;
+					this._executeDeferred = result.then(function(data){
+						self.emit("execute", { args: args, data: data, deferred: true });
+					});
+					return this._executeDeferred;
+				}else{
+					this.emit("execute", { args: args, data: result, deferred: false });
+					return result;
+				}
+			}else{
+				console.warn("Command: .execute() not set but called.");
 			}
-			this.emit("execute", { args: args });
 		},
 		_setExecute: function(value){
 			// summary:
@@ -78,9 +94,19 @@ define([
 			//		Undos whatever .execute did.
 			if (typeof this._undo === "function"){
 				result = this._undo();
+				if (result && typeof result.then === "function"){
+					var self = this;
+					this._undoDeferred = result.then(function(data){
+						self.emit("undo", { data: data, deferred: true });
+					});
+					return this._undoDeferred;
+				}else{
+					this.emit("undo", { data: result, deferred: false });
+					return result;
+				}
+			}else{
+				console.warn("Command: .undo() not set but called.");
 			}
-			this.emit("undo", {});
-			return result;
 		},
 		_setUndo: function(value){
 			// summary:
