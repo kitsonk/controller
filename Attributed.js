@@ -1,14 +1,31 @@
 define([
 		"dojo/_base/declare", // declare declare.safeMixin
 		"dojo/_base/array", // array.forEach
+		"dojo/has",
 		"dojo/Stateful"
-], function (declare, array, Stateful){
-	
+], function (declare, array, has, Stateful){
+
 // module:
 //		dojo-controller/Attributed
 // summary:
 //		A class that builds upon dojo/Stateful by adding on auto-magic getters and setters 
 //		functionality.
+
+// Feature detection of fully compliant ES5 defineProperty, IE8's defineProperty is not 
+// es5 compliant.
+has.add("es5-defineproperty", function(){
+	if (typeof Object.defineProperty === "function"){
+		try{
+			// IE8 will throw
+			Object.defineProperty({}, 'x', {});
+			return true;
+		}catch(e){
+			return false;
+		}
+	} else {
+		return false;
+	}
+});
 
 	return declare([Stateful], {
 		// summary:

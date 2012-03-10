@@ -1,6 +1,8 @@
 dojo.provide("dojo-controller.tests.Attributed");
 
-var Attributed = dojo.require("dojo-controller.Attributed");
+var Attributed = dojo.require("dojo-controller.Attributed"),
+	has = dojo.require("dojo.has"),
+	sniff = dojo.require("dojo.sniff");
 
 doh.register("tests.Attributed",
 	[
@@ -110,6 +112,14 @@ doh.register("tests.Attributed",
 			
 			t.is(output, ["foo", "old", "new", "foo", "old", "new", "bar", 0, 1]);
 			t.is(attr4.get("foo"), "again");
+		},
+		function definePropertyHandling(t){
+			var hasDefineProperty = has("es5-defineproperty");
+			if (has("ie") <= 8){
+				t.is(hasDefineProperty, false);
+			}else{
+				t.is(hasDefineProperty, true);
+			}
 		}
 	]
 );
