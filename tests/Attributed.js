@@ -58,35 +58,30 @@ doh.register("tests.Attributed",
 			t.is(attr2.foo(), "baz");
 			t.is(attr2.get("bar"), 4);
 		},
-		function eventHandling(t){
-			var output = [];
-			var AttrClass3 = dojo.declare([Attributed],{
-				foo: "",
-				bar: 0,
+		function hashSetting(t){
+			var AttrClass3 = dojo.declare([Attributed], {
+				foo: null,
+				bar: 5,
 				
 				_setFoo: function(value){
 					this.foo = value;
 				},
-				
 				_setBar: function(value){
 					this.bar = value;
 				}
 			});
 			
-			var attr3 = new AttrClass3({
-				foo: "old",
-				bar: 1
-			});
-			attr3.on("attrmodified", function(evt){
-				output.push(evt.attrName);
-				output.push(evt.prevValue);
-				output.push(evt.newValue);
+			var attr3 = new AttrClass3();
+			attr3.set({
+				foo: function() {
+					return "baz";
+				},
+				bar: 4
 			});
 			
-			attr3.set("foo", "new");
-			attr3.set("bar", 2);
-			
-			t.is(output, ["foo", "old", "new", "bar", 1, 2]);
+			t.is(typeof attr3.foo, "function");
+			t.is(attr3.foo(), "baz");
+			t.is(attr3.get("bar"), 4);
 		},
 		function watchHandling(t){
 			var output = [];

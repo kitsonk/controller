@@ -1,21 +1,19 @@
 define([
 		"dojo/_base/declare", // declare declare.safeMixin
 		"dojo/_base/array", // array.forEach
-		"dojo/_base/lang", // lang.isFunction
-		"dojo/Evented",
 		"dojo/Stateful"
-], function (declare, array, lang, Evented, Stateful){
+], function (declare, array, Stateful){
 	
 // module:
 //		dojo-controller/Attributed
 // summary:
-//		A class that combines dojo/Stateful and dojo/Evented and then adds on
-//		auto-magic getters and setters functionality.
+//		A class that builds upon dojo/Stateful by adding on auto-magic getters and setters 
+//		functionality.
 
-	return declare([Stateful, Evented], {
+	return declare([Stateful], {
 		// summary:
-		//		A class that combines dojo/Stateful and dojo/Evented and then adds on
-		//		auto-magic getters and setters functionality.
+		//		A class that builds upon dojo/Stateful by adding on auto-magic getters and 
+		//		setters functionality.
 		//
 		// description:
 		//		A class that provides the functionality to auto-magically manage getters
@@ -29,8 +27,8 @@ define([
 		//		setter of _setFoo.
 		
 		// _attrPairNames: Hash
-		//		Used for storing internally any Deferred used to operate the execute 
-		//		thread.
+		//		Used across all instances a hash to cache attribute names and their getter 
+		//		and setter names.
 		_attrPairNames: {},
 		_getAttrNames: function(name){
 			// summary:
@@ -43,17 +41,13 @@ define([
 			if(apn[name]){ return apn[name]; }
 			var uc = name.replace(/^[a-z]|-[a-zA-Z]/g, function(c){ return c.charAt(c.length-1).toUpperCase(); });
 			return (apn[name] = {
-				n: name+"Node",
 				s: "_set"+uc,	// converts dashes to camel case, ex: accept-charset --> _setAcceptCharset
-				g: "_get"+uc,
-				l: uc.toLowerCase()		// lowercase name w/out dashes, ex: acceptcharset
+				g: "_get"+uc
 			});
 		},
 		
 		postscript: function(/*Object?*/ params){
-			for(var param in params){
-				this.set(param, params[param]);
-			}
+			if (params){ this.set(params); }
 			this._created = true;
 		},
 		
@@ -81,7 +75,7 @@ define([
 			// summary:
 			//		Set a property on a widget
 			//	name:
-			//		The property to set.
+			//		The property to set or an object that is a hash of properties and values.
 			//	value:
 			//		The value to set in the property.
 			// description:
@@ -112,22 +106,17 @@ define([
 			var names = this._getAttrNames(name),
 				setter = this[names.s],
 				getter = this[names.g],
-				oldValue = lang.isFunction(getter) ? getter.call(this, name) : this[name];
-			if(lang.isFunction(setter)){
+				oldValue = typeof getter === "function" ? getter.call(this, name) : this[name];
+			if(typeof setter === "function"){
 				// use the explicit setter
 				var result = setter.apply(this, Array.prototype.slice.call(arguments, 1));
 			}else{
 				this[name] = value;
 			}
-			if(this._created && value !== oldValue){
+			if(this._created){
 				if(this._watchCallbacks){
 					this._watchCallbacks(name, oldValue, value);
 				}
-				this.emit("attrmodified", {
-					attrName: name,
-					prevValue: oldValue,
-					newValue: value
-				});
 			}
 			return result || this;
 		}
