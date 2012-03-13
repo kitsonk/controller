@@ -10,7 +10,7 @@ define([
 //		An object that allows abstraction and management of "command" 
 //		type logic.
 
-	return declare([Evented, Attributed], {
+	return declare([Attributed], {
 		// summary:
 		//		An object that allows abstraction and management of "command" 
 		//		type logic.
@@ -72,12 +72,12 @@ define([
 				console.warn("Command: .execute() not set but called.");
 			}
 		},
-		_setExecute: function(value){
+		_set_execute: function(value){
 			// summary:
 			//		Set the execute function
 			this._execute = value;
 		},
-		_getExecute: function(){
+		_get_execute: function(){
 			// summary:
 			//		Get the execute function
 			return this._execute;
@@ -108,13 +108,13 @@ define([
 				console.warn("Command: .undo() not set but called.");
 			}
 		},
-		_setUndo: function(value){
+		_set_undo: function(value){
 			// summary:
 			//		Set the undo function
 			this.undoable = value ? true : false;
 			this._undo = value;
 		},
-		_getUndo: function(){
+		_get_undo: function(){
 			// summary:
 			//		Get the undo function
 			return this._undo;

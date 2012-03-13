@@ -2,6 +2,7 @@ dojo.provide("dojo-controller.tests.Attributed");
 
 var Attributed = dojo.require("dojo-controller.Attributed"),
 	has = dojo.require("dojo.has"),
+	on = dojo.require("dojo.on"),
 	sniff = dojo.require("dojo.sniff");
 
 doh.register("tests.Attributed",
@@ -12,14 +13,14 @@ doh.register("tests.Attributed",
 				bar: 0,
 				baz: "",
 				
-				_setFoo: function(value){
+				_set_foo: function(value){
 					this.foo = value;
 				},
-				_getFoo: function(){
+				_get_foo: function(){
 					return "bar";
 				},
 				
-				_setBar: function(value){
+				_set_bar: function(value){
 					this.bar = value;
 				}
 			});
@@ -41,10 +42,10 @@ doh.register("tests.Attributed",
 				foo: null,
 				bar: 5,
 				
-				_setFoo: function(value){
+				_set_foo: function(value){
 					this.foo = value;
 				},
-				_setBar: function(value){
+				_set_bar: function(value){
 					this.bar = value;
 				}
 			});
@@ -65,10 +66,10 @@ doh.register("tests.Attributed",
 				foo: null,
 				bar: 5,
 				
-				_setFoo: function(value){
+				_set_foo: function(value){
 					this.foo = value;
 				},
-				_setBar: function(value){
+				_set_bar: function(value){
 					this.bar = value;
 				}
 			});
@@ -89,7 +90,11 @@ doh.register("tests.Attributed",
 			var output = [];
 			var AttrClass4 = dojo.declare([Attributed],{
 				foo: "old",
-				bar: 0
+				bar: 0,
+				
+				_set_foo: function(value){
+					this.foo = value;
+				}
 			});
 			
 			var attr4 = new AttrClass4();
@@ -113,12 +118,81 @@ doh.register("tests.Attributed",
 			t.is(output, ["foo", "old", "new", "foo", "old", "new", "bar", 0, 1]);
 			t.is(attr4.get("foo"), "again");
 		},
-		function definePropertyHandling(t){
+		function globalAccessors(t){
+			var output = [];
+			var AttrClass5 = dojo.declare([Attributed],{
+				foo: "",
+				bar: 0,
+				
+				_setter: function(name, value){
+					output.push(name);
+					output.push(value);
+					this[name] = value;
+				},
+				
+				_getter: function(name){
+					output.push(name);
+					return this[name];
+				},
+				
+				_set_bar: function(value){
+					output.push(value);
+					this.bar = value;
+				},
+				
+				_get_bar: function(){
+					return this.bar;
+				}
+			});
+			
+			var attr5 = new AttrClass5();
+			attr5.set("foo", "baz");
+			attr5.set("bar", 5);
+			var result1 = attr5.get("foo");
+			var result2 = attr5.get("bar");
+			
+			t.is(output, ["foo", "foo", "baz", 5, "foo"]);
+			t.is(result1, "baz");
+			t.is(result2, 5);
+		},
+		function eventFunctionality(t){
+			var output = [];
+			var AttrClass6 = dojo.declare([Attributed],{
+				foo: "",
+				bar: 0
+			});
+			
+			var attr6 = new AttrClass6({
+				foo: "bar",
+				bar: 1
+			});
+			
+			attr6.on("changed", function(e){
+				output.push(e.attrName);
+				output.push(e.prevValue);
+				output.push(e.newValue);
+			});
+			attr6.on("changed-foo", function(e){
+				output.push(e.prevValue);
+				output.push(e.newValue);
+			});
+			attr6.set("foo", "baz");
+			attr6.set("bar", 6);
+			
+			t.is(output, ["foo", "bar", "baz", "bar", "baz", "bar", 1, 6]);
+		},
+		function featureDetection(t){
 			var hasDefineProperty = has("es5-defineproperty");
 			if (has("ie") <= 8){
 				t.is(hasDefineProperty, false);
 			}else{
 				t.is(hasDefineProperty, true);
+			}
+			var hasAccessors = has("accessors");
+			if (has("ie") <= 8){
+				t.is(hasAccessors, false);
+			}else{
+				t.is(hasAccessors, true);
 			}
 		}
 	]
