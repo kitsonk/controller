@@ -48,6 +48,43 @@ doh.register("tests.command.Command",
 			command1.undo();
 			
 			t.is(output, [1, 3, 2, 4]);
+		},
+		function executeArguments(t){
+			var output = [];
+			var command1 = new Command({
+				execute: function(){
+					output.concat(arguments);
+				}
+			});
+			
+			command1.execute("foo", "bar", "baz");
+			
+			t.is(output, "foo", "bar", "baz");
+		},
+		function executeDeferred(t){
+			var td = new doh.Deferred;
+			var command1 = new Command({
+				execute: function(ms) {
+					var d = new dojo.Deferred();
+					ms = ms || 20;
+					if(this.setTimeout){
+						setTimeout(function(){
+							d.progress(0.5);
+						},ms/2);
+						setTimeout(function(){
+							d.resolve();
+						},ms);
+					}else{
+						d.progress(0.5);
+						d.resolve();
+					}
+					return d.promise;
+				}
+			});
+			command1.execute().then(function(){
+				td.callback(true);
+			});
+			return td;
 		}
 	]
 );

@@ -47,25 +47,24 @@ define([
 		// undoable: [const] Boolean
 		//		Returns true if the Command supports the undo function.  It is assumed 
 		//		that the Command will be able to fully 
-		undoable: false,
 		
 		// cancelable: Boolean
 		//		Returns true if the Command can be cancelled and false if it cannot be.
 		cancelable: false,
 
-		execute: function(/*Object?*/ args){
+		execute: function(){
 			// summary:
 			//		Executes the command.
 			if (typeof this._execute === "function"){
-				result = this._execute(args);
+				result = this._execute.apply(this, arguments);
 				if (result && typeof result.then === "function"){
 					var self = this;
 					this._executeDeferred = result.then(function(data){
-						self.emit("execute", { args: args, data: data, deferred: true });
+						self.emit("execute", { args: arguments, data: data, deferred: true });
 					});
 					return this._executeDeferred;
 				}else{
-					this.emit("execute", { args: args, data: result, deferred: false });
+					this.emit("execute", { args: arguments, data: result, deferred: false });
 					return result;
 				}
 			}else{
@@ -93,15 +92,15 @@ define([
 			// summary:
 			//		Undos whatever .execute did.
 			if (typeof this._undo === "function"){
-				result = this._undo();
+				result = this._undo.apply(this, arguments);
 				if (result && typeof result.then === "function"){
 					var self = this;
 					this._undoDeferred = result.then(function(data){
-						self.emit("undo", { data: data, deferred: true });
+						self.emit("undo", { args: arguments, data: data, deferred: true });
 					});
 					return this._undoDeferred;
 				}else{
-					this.emit("undo", { data: result, deferred: false });
+					this.emit("undo", { args: arguments, data: result, deferred: false });
 					return result;
 				}
 			}else{
@@ -118,6 +117,14 @@ define([
 			// summary:
 			//		Get the undo function
 			return this._undo;
+		},
+		
+		_get_undoable: function(){
+			return typeof this._undo === "function";
+		},
+		
+		_set_undoable: function(value){
+			console.warn("Command: undoable is a read-only property.");
 		}
 		
 	});
