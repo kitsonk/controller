@@ -110,7 +110,6 @@ define([
 		_set_undo: function(value){
 			// summary:
 			//		Set the undo function
-			this.undoable = value ? true : false;
 			this._undo = value;
 		},
 		_get_undo: function(){

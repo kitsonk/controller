@@ -159,7 +159,7 @@ define([
 		
 		_changeAttrValue: function(name, value){
 			// summary:
-			//		Internal helper for directly chnaging an attribute value.
+			//		Internal helper for directly changing an attribute value.
 			//	name:
 			//		The property to set or an object that is a hash of properties and values.
 			//	value:

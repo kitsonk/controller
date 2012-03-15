@@ -24,8 +24,8 @@ doh.register("tests.command.Command",
 			command2.undo();
 			
 			t.is(order, [0]);
-			t.is(command1.undoable, false);
-			t.is(command2.undoable, true);
+			t.is(command1.get("undoable"), false);
+			t.is(command2.get("undoable"), true);
 		},
 		function eventHandling(t){
 			var output = [];
