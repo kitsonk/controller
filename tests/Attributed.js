@@ -1,14 +1,10 @@
-dojo.provide("dojo-controller.tests.Attributed");
-
-var Attributed = dojo.require("dojo-controller.Attributed"),
-	has = dojo.require("dojo.has"),
-	on = dojo.require("dojo.on"),
-	sniff = dojo.require("dojo.sniff");
+define(["doh", "dojo/_base/declare", "dojo/has", "dojo/sniff", "../Attributed"],
+function(doh, declare, has, sniff, Attributed){
 
 doh.register("tests.Attributed",
 	[
 		function basic(t){
-			var AttrClass1 = dojo.declare([Attributed],{
+			var AttrClass1 = declare([Attributed],{
 				foo: "",
 				bar: 0,
 				baz: "",
@@ -38,7 +34,7 @@ doh.register("tests.Attributed",
 			t.is(attr1.baz, "bar");
 		},
 		function paramHandling(t){
-			var AttrClass2 = dojo.declare([Attributed], {
+			var AttrClass2 = declare([Attributed], {
 				foo: null,
 				bar: 5,
 				
@@ -62,7 +58,7 @@ doh.register("tests.Attributed",
 			t.is(attr2.get("bar"), 4);
 		},
 		function hashSetting(t){
-			var AttrClass3 = dojo.declare([Attributed], {
+			var AttrClass3 = declare([Attributed], {
 				foo: null,
 				bar: 5,
 				
@@ -88,7 +84,7 @@ doh.register("tests.Attributed",
 		},
 		function watchHandling(t){
 			var output = [];
-			var AttrClass4 = dojo.declare([Attributed],{
+			var AttrClass4 = declare([Attributed],{
 				foo: "old",
 				bar: 0,
 				
@@ -120,7 +116,7 @@ doh.register("tests.Attributed",
 		},
 		function globalAccessors(t){
 			var output = [];
-			var AttrClass5 = dojo.declare([Attributed],{
+			var AttrClass5 = declare([Attributed],{
 				foo: "",
 				bar: 0,
 				
@@ -157,7 +153,7 @@ doh.register("tests.Attributed",
 		},
 		function eventFunctionality(t){
 			var output = [];
-			var AttrClass6 = dojo.declare([Attributed],{
+			var AttrClass6 = declare([Attributed],{
 				foo: "",
 				bar: 0
 			});
@@ -197,3 +193,4 @@ doh.register("tests.Attributed",
 		}
 	]
 );
+});

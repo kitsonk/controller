@@ -1,8 +1,7 @@
 define([
 		"dojo/_base/declare", // declare declare.safeMixin
-		"dojo/Evented",
 		"../Attributed"
-], function(declare, Evented, Attributed){
+], function(declare, Attributed){
 
 // module:
 //		dojo-controller/command/Command
@@ -25,6 +24,14 @@ define([
 		//	|		}
 		//	|	});
 		//	| });
+		
+		// name: String
+		//		The name of the command.  Defaults to empty.
+		name: "",
+		
+		// type: String
+		//		A string the represents the type of command.
+		type: "command",
 		
 		// _executeDeferred: Deferred
 		//		Used for storing internally any Deferred used to operate the execute 
@@ -54,13 +61,16 @@ define([
 
 		execute: function(){
 			// summary:
-			//		Executes the command.
+			//		Executes the command.  Any arguments provided are passed to the 
+			//		execute function.
 			if (typeof this._execute === "function"){
-				result = this._execute.apply(this, arguments);
+				result = this._execute.apply(this._context || this, arguments);
 				if (result && typeof result.then === "function"){
 					var self = this;
+					this._executeReturn = result;
 					this._executeDeferred = result.then(function(data){
 						self.emit("execute", { args: arguments, data: data, deferred: true });
+						return data;
 					});
 					return this._executeDeferred;
 				}else{
@@ -82,21 +92,17 @@ define([
 			return this._execute;
 		},
 		
-		cancel: function(){
-			// summary:
-			//		Cancels any part of the command that is in-flight.
-			
-		},
-		
 		undo: function(){
 			// summary:
 			//		Undos whatever .execute did.
 			if (typeof this._undo === "function"){
-				result = this._undo.apply(this, arguments);
+				result = this._undo.apply(this._context || this, arguments);
 				if (result && typeof result.then === "function"){
 					var self = this;
+					this._undoReturn = result;
 					this._undoDeferred = result.then(function(data){
 						self.emit("undo", { args: arguments, data: data, deferred: true });
+						return data;
 					});
 					return this._undoDeferred;
 				}else{
@@ -119,11 +125,43 @@ define([
 		},
 		
 		_get_undoable: function(){
+			// summary:
+			//		Customer getter for `undoable` attribute.
 			return typeof this._undo === "function";
 		},
 		
 		_set_undoable: function(value){
-			console.warn("Command: undoable is a read-only property.");
+			// summary:
+			//		Customer setter for `undoable` attribute.
+			console.warn("Command: undoable is a read-only attribute.");
+		},
+		
+		cancel: function(){
+			// summary:
+			//		Cancels any part of the command that is in-flight.
+			if (this._executeReturn && (this._executeReturn.fired == -1)){
+				this._executeReturn.cancel();
+			}
+			delete this._executeReturn;
+			this._executeDeferred = null;
+			if (this._undoReturn && (this._undoReturn.fired == -1)){
+				this._undoReturn.cancel();
+			}
+			delete this._undoReturn;
+			this._undoDeferred = null;
+		},
+		
+		destroy: function(){
+			this.cancel();
+			this.inherited(arguments);
+		},
+		
+		_get_context: function(){
+			return this._context;
+		},
+		
+		_set_context: function(value){
+			this._context = value;
 		}
 		
 	});

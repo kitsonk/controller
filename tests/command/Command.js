@@ -1,6 +1,23 @@
-dojo.provide("dojo-controller.tests.command.Command");
+define(["doh", "dojo/_base/Deferred", "dojo/has", "dojo/sniff", "../../command/Command"],
+function(doh, Deferred, has, sniff, Command){
 
-var Command = dojo.require("dojo-controller.command.Command");
+var delay = function(ms) {
+	var d = new Deferred();
+	ms = ms || 20;
+	if(this.setTimeout){
+		setTimeout(function(){
+			d.progress(0.5);
+		},ms/2);
+		setTimeout(function(){
+			d.resolve();
+		},ms);
+	}else{
+		d.progress(0.5);
+		d.resolve();
+	}
+	return d.promise;
+};
+
 doh.register("tests.command.Command",
 	[
 		function basic(t){
@@ -64,27 +81,27 @@ doh.register("tests.command.Command",
 		function executeDeferred(t){
 			var td = new doh.Deferred;
 			var command1 = new Command({
-				execute: function(ms) {
-					var d = new dojo.Deferred();
-					ms = ms || 20;
-					if(this.setTimeout){
-						setTimeout(function(){
-							d.progress(0.5);
-						},ms/2);
-						setTimeout(function(){
-							d.resolve();
-						},ms);
-					}else{
-						d.progress(0.5);
-						d.resolve();
-					}
-					return d.promise;
-				}
+				execute: delay
+			});
+			command1.on("execute", function(e){
+				t.assertEqual(e.deferred, true);
 			});
 			command1.execute().then(function(){
 				td.callback(true);
 			});
 			return td;
+		},
+		function executeDeferredCancel(t){
+			var td = new doh.Deferred;
+			var command1 = new Command({
+				execute: delay
+			});
+			command1.execute().then(function(data){
+				td.callback(true);
+			});
+			command1.cancel();
+			return td;
 		}
 	]
 );
+});
