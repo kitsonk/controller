@@ -73,6 +73,16 @@ define([
 			if (params){ this.set(params); }
 		},
 		
+		_get: function(name, names){
+			// summary:
+			//		Private function that does a get based off a hash of names
+			//	names:
+			//		Hash of names of custom attributes
+			return typeof this[names.g] === "function" ? this[names.g]() 
+				: typeof this[names.go] === "function" ? this[names.go]() // TODO: Remove in 2.0
+				: typeof this._getter === "function" ? this._getter(name) : this[name];
+		},
+		
 		get: function(name){
 			// summary:
 			//		Get a property from an object.
@@ -89,10 +99,7 @@ define([
 			//		`myObject._getFoo()` and `myObject.get("bar")`
 			//		would be equivalent to the expression
 			//		`myObject.bar`
-			var names = this._getAttrNames(name);
-			return typeof this[names.g] === "function" ? this[names.g]() 
-				: typeof this[names.go] === "function" ? this[names.go]() // TODO: Remove in 2.0
-				: typeof this._getter === "function" ? this._getter(name) : this[name];
+			return this._get(name, this._getAttrNames(name));
 		},
 
 		set: function(name, value){
@@ -129,7 +136,7 @@ define([
 			}
 			
 			var names = this._getAttrNames(name),
-				oldValue = this.get(name),
+				oldValue = this._get(name, names),
 				setter = this[names.s],
 				setterOld = this[names.so], // TODO Remove in 2.0
 				globalSetter = this._setter;
