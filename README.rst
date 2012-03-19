@@ -26,27 +26,26 @@ An object that allows abstraction and management of "command" type logic. Full d
 Example
 ~~~~~~~
 
-.. code-block:: js
-  :linenos:
+Here is an example::
 
-  require(["dojo-controller/command/Command"], function(Command){
-    var output = [];
-    var myCommand = new Command({
-      execute: function(args){
-        output.push(args.value);
-        this.inherited(arguments);
-      },
-      undo: function(){
-        output.pop();
-        this.inherited(arguments);
-      }
-    });
+    require(["dojo-controller/command/Command"], function(Command){
+      var output = [];
+      var myCommand = new Command({
+        execute: function(args){
+          output.push(args.value);
+          this.inherited(arguments);
+        },
+        undo: function(){
+          output.pop();
+          this.inherited(arguments);
+        }
+      });
     
-    myCommand.execute({ value: 0 });
-    console.log(output);
-    myCommand.undo();
-    console.log(output);
-  });
+      myCommand.execute({ value: 0 });
+      console.log(output);
+      myCommand.undo();
+      console.log(output);
+    });
 
 dojo-controller/command/CommandStack
 ------------------------------------
