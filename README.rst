@@ -26,7 +26,8 @@ An object that allows abstraction and management of "command" type logic. Full d
 Example
 ~~~~~~~
 
-.. js ::
+.. code-block:: js
+  :linenos:
 
   require(["dojo-controller/command/Command"], function(Command){
     var output = [];
