@@ -21,12 +21,12 @@ dojo-controller/command/Command
 -------------------------------
 
 An object that allows abstraction and management of "command" type logic. Full documentation can be found here:
-:ref:`dojo-controller/command/Command <docs/command/Command>`.
+`dojo-controller/command/Command <docs/command/Command>`_.
 
 Example
 ~~~~~~~
 
-.. js::
+.. js ::
 
   require(["dojo-controller/command/Command"], function(Command){
     var output = [];
@@ -71,4 +71,6 @@ dojo-controller/action/_ActionWidgetMixin
 dojo-controller/Attributed
 ==========================
 
-An class that combines ``dojo/Evented`` and ``dojo/Stateful`` and then adds in the concept of attributes that have auto-magically recognised getters and setters.  This is similar to the attribute getter and setter functionality in ``dijit/_WidgetBase``.
+An class that combines ``dojo/Evented`` and ``dojo/Stateful`` and then adds in the concept of attributes that have
+auto-magically recognised getters and setters. This is similar to the attribute getter and setter functionality in
+``dijit/_WidgetBase``.
