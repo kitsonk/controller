@@ -19,7 +19,7 @@ define([
 		
 		postscript: function(params){
 			this._commands = [];
-			if (params){ this.set(params); }
+			this.inherited(arguments);
 		},
 		
 		add: function(command){

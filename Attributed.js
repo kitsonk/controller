@@ -71,6 +71,7 @@ define([
 		
 		postscript: function(/*Object?*/ params){
 			if (params){ this.set(params); }
+			this._created = true;
 		},
 		
 		_get: function(name, names){
@@ -158,8 +159,10 @@ define([
 			if(this._watchCallbacks){
 				this._watchCallbacks(name, oldValue, value);
 			}
-			this.emit("changed", { attrName: name, prevValue: oldValue, newValue: value });
-			this.emit("changed-" + name, { prevValue: oldValue, newValue: value });
+			if(this._created){
+				this.emit("changed", { attrName: name, prevValue: oldValue, newValue: value });
+				this.emit("changed-" + name, { prevValue: oldValue, newValue: value });
+			}
 			
 			return result || this;
 		},

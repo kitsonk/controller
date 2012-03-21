@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>dojo-controller/action/Action Tests</title>
+	<style type="text/css">
+		@import "../../../dijit/themes/claro/document.css";
+		@import "../../../dijit/themes/claro/claro.css";
+		@import "../css/tests.css";
+	</style>
+
+	<script type="text/javascript" src="../../../dojo/dojo.js" data-dojo-config="isDebug: true"></script>
+	<script>
+		require([
+		  "dojo/_base/declare", // declare
+		  "dojo/on",
+		  "dojo/parser", // parser.parse
+		  "dijit/registry", // registry.byId
+		  "dijit/form/Button",
+		  "dijit/PopupMenuBarItem",
+		  "dijit/Menu",
+		  "dijit/MenuBar",
+		  "dijit/MenuItem",
+		  "dojo-controller/action/Action",
+		  "dojo/domReady!"
+		], function(declare, on, parser, registry, Button, PopupMenuBarItem, Menu, MenuBar, MenuItem, Action){
+		  parser.parse();
+		  var action1 = new Action(["button1", "menuItem1", "cut"],{
+		    label: "Cut",
+		    iconClass: "dijitEditorIcon dijitEditorIconCopy",
+		    accelKey: "Ctrl+V",
+		    title: "Cut Something",
+		    run: function(){
+		      console.log("I ran!");
+		    }
+		  });
+		  on(registry.byId("button2"), "click", function(){
+		    action1.set({ label: "somethingElse", enabled: false });
+		  });
+		});
+	</script>
+</head>
+<body class="claro">
+  <h1 class="testTitle">dojo-controller/action/Action Tests</h1>
+  
+  <div id="menubar" data-dojo-type="dijit/MenuBar">
+    <div id="file" data-dojo-type="dijit/PopupMenuBarItem">
+      <span>File</span>
+      <div id="fileMenu" data-dojo-type="dijit/Menu">
+        <div id="new" data-dojo-type="dijit/MenuItem">New</div>
+      </div>
+    </div>
+    <div id="edit" data-dojo-type="dijit/PopupMenuBarItem">
+      <span>Edit</span>
+      <div id="editMenu" data-dojo-type="dijit/Menu">
+        <div id="cut" data-dojo-type="dijit/MenuItem"></div>
+      </div>
+    </div>
+  </div>
+  <div>&nbsp;</div>
+	<div id="button1" data-dojo-type="dijit/form/Button"></div>
+	<div id="button2" data-dojo-type="dijit/form/Button">Change Action</div>
+	<div data-dojo-type="dijit/Menu" id="windowContextMenu" data-dojo-props="contextMenuForWindow: true" style="display: none;">
+	  <div data-dojo-type="dijit/MenuItem" id="menuItem1">Menu Item 1</div>
+	  <div data-dojo-type="dijit/MenuItem">Menu Item 2</div>
+	</div>
+	
+</body>
+</html>

@@ -38,9 +38,9 @@ define([
 			}else{
 				this._context = context;
 			}
-			if (params){ this.set(params); }
 			this._undoStack = [];
 			this._redoStack = [];
+			this.inherited(arguments);
 		},
 		
 		execute: function(command){
