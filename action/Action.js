@@ -145,6 +145,10 @@ define([
 			if(!params && !(binds instanceof Array)){
 				params = binds;
 			}
+			if("binds" in params){
+				binds = params.binds;
+				delete params.binds;
+			}
 			if (params){ this.set(params); }
 			this._binds = [];
 			this._runHandles = [];
@@ -240,12 +244,19 @@ define([
 				return;
 			}else{
 				var attrMap = this._attrMapping;
+				if("showLabel" in widget){ // Saving showLabel because if we set label, it will reset showLabel
+					// TODO this is hacky...
+					var showLabel = widget.get("showLabel");
+				}
 				if(attr){ // Only a single attribute being set
 					setAttr.call(this, widget, attrMap[attr], attr);
 				}else{
 					for(var attr in attrMap){ // The whole map is done.
 						setAttr.call(this, widget, attrMap[attr], attr);
 					}
+				}
+				if("showLabel" in widget){
+					widget.set("showLabel", showLabel);
 				}
 			}
 		},
