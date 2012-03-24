@@ -12,7 +12,7 @@
 	<script type="text/javascript" src="../../../dojo/dojo.js" data-dojo-config="isDebug: true"></script>
 	<script>
 		require([
-		  "dojo/_base/declare", // declare
+		  "doh",
 		  "dojo/on",
 		  "dojo/parser", // parser.parse
 		  "dijit/registry", // registry.byId
@@ -23,20 +23,28 @@
 		  "dijit/MenuItem",
 		  "dojo-controller/action/Action",
 		  "dojo/domReady!"
-		], function(declare, on, parser, registry, Button, PopupMenuBarItem, Menu, MenuBar, MenuItem, Action){
+		], function(doh, on, parser, registry, Button, PopupMenuBarItem, Menu, MenuBar, MenuItem, Action){
 		  parser.parse();
-		  var action1 = new Action(["button1", "menuItem1", "cut"],{
-		    label: "Cut",
-		    iconClass: "dijitEditorIcon dijitEditorIconCopy",
-		    accelKey: "Ctrl+V",
-		    title: "Cut Something",
-		    run: function(){
-		      console.log("I ran!");
-		    }
-		  });
-		  on(registry.byId("button2"), "click", function(){
-		    action1.set({ label: "somethingElse", enabled: false });
-		  });
+		  doh.register("group",
+		    [
+		      function basic(t){
+		        var output = [];
+		        var action1 = new Action(["button1", "menuItem1", "cut"], {
+		          label: "Cut",
+		          iconClass: "dijitEditorIcon dijitEditorIconCopy",
+		          accelKey: "Ctrl+V",
+		          title: "Cut Something",
+		          run: function(){
+		            output.push("cut");
+		          }
+		        });
+		        t.is(registry.byId("button1").get("label"), "Cut");
+		        t.is(registry.byId("menuItem1").get("label"), "Cut");
+		        t.is(registry.byId("cut").get("label"), "Cut");
+		      }
+		    ]
+		  );
+		  doh.runOnLoad();
 		});
 	</script>
 </head>
