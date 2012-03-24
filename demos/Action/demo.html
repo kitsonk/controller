@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Action Demonstration</title>
+  <link rel="shortcut icon" href="images/favicon.png">
+  <link rel="stylesheet" href="demo.css" type="text/css">
+  <script type="text/javascript" src="../../../dojo/dojo.js" data-dojo-config="async: true, locale: 'en-gb'"
+    charset="utf-8"></script>
+  <script type="text/javascript" src="src.js" charset="utf-8"></script>
+</head>
+<body class="claro">
+  <div id="preloader">
+    Loading Application...
+  </div>
+  <div data-dojo-type="dijit/Menu" id="windowContextMenu" data-dojo-props="contextMenuForWindow: true" 
+      style="display: none;">
+    <div id="context.file.New" data-dojo-type="dijit/MenuItem"></div>
+    <div id="context.file.Open" data-dojo-type="dijit/MenuItem"></div>
+    <div id="context.file.Close" data-dojo-type="dijit/MenuItem"></div>
+    <div id="context.file.Save" data-dojo-type="dijit/MenuItem"></div>
+    <div data-dojo-type="dijit/MenuSeparator"></div>
+    <div id="context.edit.Undo" data-dojo-type="dijit/MenuItem"></div>
+    <div id="context.edit.Redo" data-dojo-type="dijit/MenuItem"></div>
+    <div data-dojo-type="dijit/MenuSeparator"></div>
+    <div id="context.edit.Copy" data-dojo-type="dijit/MenuItem"></div>
+    <div id="context.edit.Cut" data-dojo-type="dijit/MenuItem"></div>
+    <div id="context.edit.Paste" data-dojo-type="dijit/MenuItem"></div>
+  </div>
+  <div data-dojo-type="dijit/layout/BorderContainer" id="mainContainer" data-dojo-props="gutters:true">
+    <div data-dojo-type="dijit/layout/ContentPane" id="headerPane" data-dojo-props="splitter:false, region:'top'">
+      Action Demonstration
+    </div>
+    <div data-dojo-type="dijit/MenuBar" data-dojo-props="splitter:false, region:'top'">
+      <div id="menubar.file" data-dojo-type="dijit/PopupMenuBarItem">
+        <span>File</span>
+        <div id="menubar.filemenu" data-dojo-type="dijit/Menu">
+          <div id="menubar.file.New" data-dojo-type="dijit/MenuItem"></div>
+          <div id="menubar.file.Open" data-dojo-type="dijit/MenuItem"></div>
+          <div data-dojo-type="dijit/MenuSeparator"></div>
+          <div id="menubar.file.Close" data-dojo-type="dijit/MenuItem"></div>
+          <div id="menubar.file.Save" data-dojo-type="dijit/MenuItem"></div>
+        </div>
+      </div>
+      <div id="menubar.edit" data-dojo-type="dijit/PopupMenuBarItem">
+        <span>Edit</span>
+        <div id="menubar.editmenu" data-dojo-type="dijit/Menu">
+          <div id="menubar.edit.Undo" data-dojo-type="dijit/MenuItem"></div>
+          <div id="menubar.edit.Redo" data-dojo-type="dijit/MenuItem"></div>
+          <div data-dojo-type="dijit/MenuSeparator"></div>
+          <div id="menubar.edit.Copy" data-dojo-type="dijit/MenuItem"></div>
+          <div id="menubar.edit.Cut" data-dojo-type="dijit/MenuItem"></div>
+          <div id="menubar.edit.Paste" data-dojo-type="dijit/MenuItem"></div>
+        </div>
+      </div>
+    </div>
+    <div data-dojo-type="dijit/layout/TabContainer" id="mainTabContainer" data-dojo-props="region: 'center'">
+      <div data-dojo-type="dijit/layout/ContentPane" id="tabWelcome" data-dojo-props="title: 'Action File'" style="padding: 0;">
+        <span data-dojo-type="dijit/Declaration" data-dojo-props='widgetClass:"ToolbarSectionStart", 
+            defaults:{ label: "Label"}'>
+      		<span data-dojo-type="dijit/ToolbarSeparator"></span><i>${label}:</i>
+      	</span>
+        <div data-dojo-type="dijit/Toolbar">
+          <div data-dojo-type="ToolbarSectionStart" data-dojo-props='label:"File"'></div>
+          <div id="toolbar.file.New" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div id="toolbar.file.Open" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div id="toolbar.file.Close" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div id="toolbar.file.Save" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div data-dojo-type="ToolbarSectionStart" data-dojo-props='label:"Edit"'></div>
+          <div id="toolbar.edit.Undo" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div id="toolbar.edit.Redo" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div id="toolbar.edit.Copy" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div id="toolbar.edit.Cut" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div id="toolbar.edit.Paste" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+        </div>
+        <div class="info">
+          <p>This is a demonstration application that is designed to show how the classes <span 
+            class="code">Action</span>, <span class="code">Command</span> and <span class="code">CommandStack</span> can
+            be used to create a rich UI application, but where the behaviour is centralised logically.</p>
+          <p><span class="code">Action</span> is a class that bridges between a behaviour and UI element (widget). 
+            <span class="code">Action</span> has several attributes that control the visual elements of the widgets that
+            it is bound to, but without any visual elements itself.  It also manages the execution of code when the
+            bound widget is actioned.  This allows you to centralise your logic, for something like "Copy" and bind it
+            to several widgets.  When something happens to the Copy Action, it is then propagated to all the bound
+            widgets without further coding.  Also, all the widgets will execute the same code.  <span
+            class="code">Action</span> supports the setting of the run attribute with a function, but it is more
+            powerful when combined with a <span class="code">Command</span> and a <span
+            class="code">CommandStack</span>.</p>
+          <p><span class="code">Command</span> is simply a class that is designed to perform some code, but in a
+            manageable way.  It includes the concepts of "execute" and "undo".  It is designed to be watchable and also
+            fires "execute" and "undo" events.</p>
+          <p><span class="code">CommandStack</span> is a logical stack of Commands that have been executed that should
+            be "undoable" and "redoable".  When you execute a <span class="code">Command</span> with the <span
+            class="code">CommandStack</span>, it ensures the <span class="code">Command</span> is handled and then
+            pushes it onto its stack to be undone later on.  Once undone, it can then be re-executed (redone).  This
+            encapsulates features of applications that allow you to expose redo and undo functionality.</p>
+        </div>
+        <div class="info">
+          <p>There are 4 areas in this demo where a set of <span class="code">Action</span>s are being bound to widgets.  This is in the menu, toolbar, context menu and the buttons below.</p>
+          <p>You can see that none of the visual elements have been set until the <span class="code">Action</span> was
+            bound to the widget.  In addition, the <strong>Copy</strong>, <strong>Cut</strong> and
+            <strong>Paste</strong> buttons utilise a <span class="code">CommandStack</span> and the stack is interfacing
+            with the <strong>Undo</strong> and <strong>Redo</strong> actions.  You can see that as things change, they
+            are reflected across all the UI elements that expose the behaviour without additional code.</p>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane">
+          <button id="button.file.New" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.file.Open" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.file.Close" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.file.Save" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Undo" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Redo" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Copy" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Cut" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Paste" data-dojo-type="dijit/form/Button" type="button"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
