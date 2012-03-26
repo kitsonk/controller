@@ -31,17 +31,15 @@ Here is an example::
     require(["dojo-controller/command/Command"], function(Command){
       var output = [];
       var myCommand = new Command({
-        execute: function(args){
-          output.push(args.value);
-          this.inherited(arguments);
+        execute: function(arg1){
+          output.push(arg1);
         },
         undo: function(){
           output.pop();
-          this.inherited(arguments);
         }
       });
     
-      myCommand.execute({ value: 0 });
+      myCommand.execute("something");
       console.log(output);
       myCommand.undo();
       console.log(output);
@@ -52,21 +50,119 @@ dojo-controller/command/CommandStack
 
 An object that handles execution of commands and puts them into a queue which then can be undone and redone as required.
 
+Example
+~~~~~~~
+
+Here is an example::
+
+    require(["dojo-controller/command/CommandStack", "dojo-controller/command/Command"], 
+    function(CommandStack, Command){
+      var output = [];
+      var command1 = new Command({
+        execute: function(){
+          output.push("command1 execute");
+        },
+        undo: function(){
+          output.push("command1 undo");
+        }
+      });
+      var command2 = new Command({
+        execute: function(){
+          output.push("command2 execute");
+        },
+        undo: function(){
+          output.push("command2 undo");
+        }
+      });
+      var commandstack = new CommandStack();
+      commandstack.execute(command1);
+      commandstack.execute(command2);
+      commandstack.undo();
+      commandstack.undo();
+      
+      // output = ["command1 execute", "command2 execute", "command2 undo", "command1 undo"]
+      console.log(output);
+    });
+
+
 dojo-controller/command/CompoundCommand
 ---------------------------------------
 
 A command that has several sub-commands that need can be executed and undone.
 
+Example
+~~~~~~~
+
+Here is an example::
+
+    require(["dojo-controller/command/CompoundCommand", "dojo-controller/command/Command"],
+    function(CommandStack, Command){
+      var output = [];
+      var command1 = new Command({
+        execute: function(){
+          output.push("command1 execute");
+        },
+        undo: function(){
+          output.push("command1 undo");
+        }
+      });
+      var command2 = new Command({
+        execute: function(){
+          output.push("command2 execute");
+        },
+        undo: function(){
+          output.push("command2 undo");
+        }
+      });
+      var compoundcommand = new CompoundCommand();
+      
+      compoundcommand.add([command1, command2]);
+      compoundcommand.execute();
+      
+      // output = ["command1 execute", "command2 execute"]
+      console.log(output);
+    })
+
 dojo-controller/action
 ======================
-
-TODO - description
 
 dojo-controller/action/Action
 -----------------------------
 
-dojo-controller/action/_ActionWidgetMixin
------------------------------------------
+This class bridges the gap between behaviour and visual UI elements.  It binds with Dijit/widgets and controls their configuration.  It also provides functionality to manage Commands and a CommandStack to provide further centralised management of behaviour code.
+
+Examples
+~~~~~~~~
+
+Here is an example::
+
+  require(["dojo-controller/action/Action", "dojo-controller/command/Command", "dojo-controller/command/Command-Stack",
+    "dijit/form/Button"],
+  function(Action, Command, CommandStack, Button){
+    var command = new Command({
+      execute: function(){
+        console.log("command execute");
+      },
+      undo: function(){
+        console.log("command undo");
+      }
+    });
+    var commandStack = new CommandStack();
+    var action = new Action({
+      label: "Click Me",
+      title: "Does something when clicked",
+      iconClass: "dijitEditorIcon dijitEditorIconSave",
+      command: command,
+      commandStack: commandStack
+    });
+    
+    var button = new Button({
+      id: "button"
+    }, "someNode");
+    
+    action.bind(button);
+  });
+
 
 dojo-controller/Attributed
 ==========================
