@@ -100,6 +100,11 @@ define([
 			this._enabled = value;
 		},
 		
+		// scope: Function
+		//		The scope of which the `this` should be when run is invoked.  Defaults 
+		//		to `null` which means `this` will be the Action itself.
+		scope: null,
+		
 		// _run: Function
 		//		Private attribute to hold a function that can define the 
 		//		behaviour of the Action.  Typically though a command/Command is 
@@ -145,11 +150,13 @@ define([
 			if(!params && !(binds instanceof Array)){
 				params = binds;
 			}
-			if("binds" in params){
-				binds = params.binds;
-				delete params.binds;
+			if (params){
+				if ("binds" in params){
+					binds = params.binds;
+					delete params.binds;
+				}
+				this.set(params);
 			}
-			if (params){ this.set(params); }
 			this._binds = [];
 			this._runHandles = [];
 			this._created = true;
@@ -171,12 +178,12 @@ define([
 			if(this.get("enabled")){
 				var result;
 				if(this._run && (typeof this._run === "function")){
-					result = this._run.apply(this, arguments);
+					result = this._run.apply(this.scope || this, arguments);
 				}else if(this._command && (typeof this._command.execute === "function")){
 					if(this._commandStack){
-						result = this._commandStack.execute.apply(this._commandStack, [this._command].concat(Array.prototype.slice.call(arguments)));
+						result = this._commandStack.execute.apply(this.scope || this._commandStack, [this._command].concat(Array.prototype.slice.call(arguments)));
 					}else{
-						result = this._command.execute.apply(this._command, arguments);
+						result = this._command.execute.apply(this.scope || this._command, arguments);
 					}
 				}else{
 					throw new Error("No suitable function found to run.");

@@ -14,6 +14,17 @@ doh.register("tests.action.Action",
 			t.is(result, "foo");
 			t.is(output, ["bar", "baz"]);
 		},
+		function scoping(t){
+			var output = [];
+			var action = new Action({
+				run: function(){
+					output.push(this.testValue);
+				},
+				scope: { testValue: "foo" }
+			});
+			action.run();
+			t.is(output, ["foo"]);
+		},
 		function commandSupport(t){
 			var output = [];
 			var action2 = new Action({
