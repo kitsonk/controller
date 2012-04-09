@@ -13,19 +13,24 @@
 	<script>
 		require([
 		  "doh",
+		  "dojo/_base/Deferred", // Deferred
 		  "dojo/on",
+		  "dojo/dom",
 		  "dojo/parser", // parser.parse
 		  "dijit/registry", // registry.byId
 		  "dijit/form/Button",
+		  "dijit/form/TextBox",
+		  "dijit/CheckedMenuItem",
 		  "dijit/PopupMenuBarItem",
 		  "dijit/Menu",
 		  "dijit/MenuBar",
 		  "dijit/MenuItem",
+		  "dojox/form/BusyButton",
 		  "dojo-controller/action/Action",
 		  "dojo/domReady!"
-		], function(doh, on, parser, registry, Button, PopupMenuBarItem, Menu, MenuBar, MenuItem, Action){
+		], function(doh, Deferred, on, dom, parser, registry, Button, TextBox, CheckedMenuItem, PopupMenuBarItem, Menu, MenuBar, MenuItem, BusyButton, Action){
 		  parser.parse();
-		  doh.register("group",
+		  doh.register("general Action tests",
 		    [
 		      function basic(t){
 		        var output = [];
@@ -38,9 +43,153 @@
 		            output.push("cut");
 		          }
 		        });
-		        t.is(registry.byId("button1").get("label"), "Cut");
-		        t.is(registry.byId("menuItem1").get("label"), "Cut");
-		        t.is(registry.byId("cut").get("label"), "Cut");
+		        t.is(registry.byId("button1").get("label"), "Cut", "label bound");
+		        t.is(registry.byId("menuItem1").get("label"), "Cut", "label bound");
+		        t.is(registry.byId("cut").get("label"), "Cut", "label bound");
+		      },
+		      function variousBinds(t){
+		        // Binding post construction
+		        var button4 = new Button({ label: "Button4" }, dom.byId("button4"));
+		        var action3 = new Action({
+		          label: "Action3"
+		        });
+		        action3.bind(button4);
+		        action3.bind("button5");
+		        t.is(button4.get("label"), "Action3", "label bound");
+		        t.is(registry.byId("button5").get("label"), "Action3", "label bound");
+		        
+		        // Binding via constructor Params
+		        var button6 = new Button({ label: "Button6"}, dom.byId("button6"));
+		        var action4 = new Action({
+		          binds: [button6, "button7"],
+		          label: "Action4"
+		        });
+		        t.is(button6.get("label"), "Action4", "label bound");
+		        t.is(registry.byId("button7").get("label"), "Action4", "label bound");
+		        
+		        // Binding via constructor argument
+		        var button8 = new Button({ label: "Button8" }, dom.byId("button8"));
+		        var action5 = new Action([button8, "button9"],{
+		          label: "Action5"
+		        });
+		        t.is(button8.get("label"), "Action5", "label bound");
+		        t.is(registry.byId("button9").get("label"), "Action5", "label bound");
+		        
+		        // Binding via declarative markup
+		        t.is(typeof a1, "object", "declarative action created");
+		        t.is(registry.byId("button10").get("label"), "Declarative Action", "label bound");
+		      },
+		      function checkAttributes(t){
+		        var output = [];
+      			
+      			var button11 = new Button({
+      			  textDir: "rtl",
+      			  dir: "rtl",
+      			  lang: "fr",
+      			  label: "Button 11",
+      			  showLabel: true,
+      			  iconClass: "dijitEditorIcon dijitEditorIconCopy",
+      			  title: "title button 11",
+      			  disabled: true
+      			}, "button11");
+      			
+      			var menuItem4 = new CheckedMenuItem({
+      			  textDir: "rtl",
+      			  dir: "rtl",
+      			  lang: "fr",
+      			  label: "MenuItem4",
+      			  iconClass: "dijitEditorIcon dijitEditorIconCopy",
+      			  accelKey: "Ctrl+4",
+      			  checked: true,
+      			  disabled: true
+      			}, "menuItem4");
+      			
+      			var textBox1 = new TextBox({
+      			  textDir: "rtl",
+      			  dir: "rtl",
+      			  lang: "fr",
+      			  value: "textbox1",
+      			  readOnly: true,
+      			  disabled: true
+      			}, "textBox1");
+      			
+      			t.is(button11.get("label"), "Button 11", "original setting works");
+      			t.is(menuItem4.get("label"), "MenuItem4", "original setting works");
+      			t.is(textBox1.get("value"), "textbox1", "original setting works");
+      			
+      			var action6 = new Action({
+      			  binds: ["textBox1", "menuItem4", "button11"],
+      			  textDir: "ltr",
+      			  dir: "ltr",
+      			  lang: "en",
+      			  label: "Action 6",
+      			  iconClass: "dijitEditorIcon dijitEditorIconCut",
+      			  title: "Action Title",
+      			  accelKey: "Ctrl+A",
+      			  readOnly: false,
+      			  enabled: true,
+      			  value: "action",
+      			  run: function(){
+      			    output.push("run");
+      			  }
+      			});
+      			
+      			on.emit(dom.byId("menuItem4"), "click", { bubbles: true });
+      			on.emit(dom.byId("button11"), "click", { bubbles: true });      			
+      			
+      			t.is(textBox1.get("textDir"), "ltr", "textDir set");
+      			t.is(textBox1.get("dir"), "ltr", "dir set");
+      			t.is(textBox1.get("lang"), "en", "lang set");
+      			t.is(textBox1.get("value"), "action", "value set");
+      			t.f(textBox1.get("readOnly"), "readOnly set");
+      			t.f(textBox1.get("disabled"), "disabled set");
+      			t.is(menuItem4.get("label"), "Action 6", "label set");
+      			t.is(menuItem4.get("accelKey"), "Ctrl+A", "accelKey set");
+      			t.is(menuItem4.get("iconClass"), "dijitEditorIcon dijitEditorIconCut", "iconClass set");
+      			t.is(button11.get("title"), "Action Title", "title set");
+      			t.is(output, ["run", "run"], "run works");
+      			
+      			action6.set("toggled", false);
+      			t.is(menuItem4.get("checked"), false, "checked set");
+      			t.f(textBox1.get("value"), "value cleared");
+      			
+      			action6.toggle();
+      			t.is(menuItem4.get("checked"), true, "check toggled");
+      			t.is(textBox1.get("value"), "action", "value restored");
+      			
+		      },
+		      function running(t){
+		        var td = new doh.Deferred();
+		        var output = [];
+		        var action2 = new Action({
+		          binds: ["busyButton1", "button3", "menuItem3"],
+		          label: "Not Running",
+		          runningDisable: true,
+		          runningLabel: "Running...",
+		          accelKey: "Ctrl+D",
+		          timeout: 750,
+		          run: function(){
+		            var deferred = new Deferred();
+		            setTimeout(function(){ 
+      						deferred.resolve({ called: true });
+      					}, 500);
+      					return deferred;
+		          }
+		        });
+		        
+		        action2.on("run", function(evt){
+		          t.t(evt.deferred, "event ran deferred");
+		          t.is(output, ["label", "Not Running", "Running...", "label", "Running...", "Not Running"], "label was changed");
+		          td.callback(true);
+		        });
+		        
+		        registry.byId("menuItem3").watch("label", function(attr, oldValue, newValue){
+		          output.push(attr, oldValue, newValue);
+		        });
+		        
+		        on.emit(dom.byId("button3"), "click", { bubbles: true });
+		        
+		        return td;
 		      }
 		    ]
 		  );
@@ -62,12 +211,28 @@
       <span>Edit</span>
       <div id="editMenu" data-dojo-type="dijit/Menu">
         <div id="cut" data-dojo-type="dijit/MenuItem"></div>
+        <div id="menuItem3" data-dojo-type="dijit/MenuItem"></div>
+        <div id="menuItem4" dir="rtl" lang="fr">Menu Item 4</div>
       </div>
     </div>
   </div>
   <div>&nbsp;</div>
-	<div id="button1" data-dojo-type="dijit/form/Button"></div>
-	<div id="button2" data-dojo-type="dijit/form/Button">Change Action</div>
+	<button type="button" id="button1" data-dojo-type="dijit/form/Button">Button1</button>
+	<button type="button" id="button2" data-dojo-type="dijit/form/Button">Change Action</button>
+	<button type="button" id="busyButton1" data-dojo-type="dojox/form/BusyButton">Busy Button</button>
+	<button type="button" id="button3" data-dojo-type="dijit/form/Button">Button3</button>
+	<button type="button" id="button4">Button4</button>
+	<button type="button" id="button5" data-dojo-type="dijit/form/Button">Button5</button>
+	<button type="button" id="button6">Button6</button>
+	<button type="button" id="button7" data-dojo-type="dijit/form/Button">Button7</button>
+	<button type="button" id="button8">Button8</button>
+	<button type="button" id="button9" data-dojo-type="dijit/form/Button">Button9</button>
+	<button type="button" id="button10" data-dojo-type="dijit/form/Button">Button10</button>
+	<div>
+	  <button type="button" id="button11" lang="fr" dir="rtl">Button 11</button>
+	  <input type="text" id="textBox1" lang="fr" dir="rtl" value="value" />
+	</div>
+	<div id="a1" data-dojo-id="a1" data-dojo-type="dojo-controller/action/Action" data-dojo-props="binds: ['button10'], label: 'Declarative Action'"></div>
 	<div data-dojo-type="dijit/Menu" id="windowContextMenu" data-dojo-props="contextMenuForWindow: true" style="display: none;">
 	  <div data-dojo-type="dijit/MenuItem" id="menuItem1">Menu Item 1</div>
 	  <div data-dojo-type="dijit/MenuItem">Menu Item 2</div>

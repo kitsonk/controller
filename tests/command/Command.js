@@ -1,4 +1,4 @@
-define(["doh", "dojo/_base/Deferred", "dojo/has", "dojo/sniff", "../../command/Command"],
+define(["doh", "dojo/Deferred", "dojo/has", "dojo/sniff", "../../command/Command"],
 function(doh, Deferred, has, sniff, Command){
 
 var delay = function(ms) {

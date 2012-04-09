@@ -1,5 +1,5 @@
-define(["doh", "../../action/Action", "../../command/Command", "../../command/CommandStack"],
-function(doh, Action, Command, CommandStack){
+define(["doh", "dojo/Deferred", "../../action/Action", "../../command/Command", "../../command/CommandStack"],
+function(doh, Deferred, Action, Command, CommandStack){
 
 doh.register("tests.action.Action",
 	[
@@ -74,6 +74,34 @@ doh.register("tests.action.Action",
 			t.is(result2, "bar");
 			t.is(commandStack1.get("undoCount"), 2);
 			t.is(output, ["baz", "qux"]);
+		},
+		function runningSupport(t){
+			var td = new doh.Deferred;
+			var output = [];
+			var action5 = new Action({
+				run: function(){
+					var deferred = new Deferred();
+					setTimeout(function(){ 
+						deferred.resolve({ called: true });
+					}, 50);
+					return deferred;
+				}
+			});
+			action5.watch("running", function(property, oldValue, newValue){
+				output = output.concat([property, oldValue, newValue]);
+			});
+			action5.on("run", function(e){
+				output.push(e);
+			});
+			action5.run().then(function(result){
+				output.push(result);
+				console.log(output);
+				td.callback(true);
+			}, function(err){
+				console.error(err);
+				td.callback(false);
+			});
+			return td;
 		}
 	]
 );

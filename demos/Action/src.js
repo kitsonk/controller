@@ -1,6 +1,7 @@
 require([
 	"dojo/parser", // parser.parse
 	"dojo/_base/array", // array.forEach
+	"dojo/_base/Deferred", // Deferred
 	"dojo/_base/fx", // baseFx.fadeOut
 	"dojo/_base/lang", // lang.setObject
 	"dojo/dom-style", // style.set
@@ -20,8 +21,9 @@ require([
 	"dijit/PopupMenuBarItem",
 	"dijit/Toolbar",
 	"dijit/ToolbarSeparator",
+	"dojox/form/BusyButton",
 	"dojo/domReady!"], 	
-function(parser, array, baseFx, lang, style, registry, Action, Command, CommandStack, ContentPane){
+function(parser, array, Deferred, baseFx, lang, style, registry, Action, Command, CommandStack, ContentPane){
 	
 	var baseName = function(path, suffix){
 	    // Returns the filename component of the path  
@@ -219,6 +221,25 @@ function(parser, array, baseFx, lang, style, registry, Action, Command, CommandS
 			}
 		}),
 		commandStack: demoCommandStack
+	}),
+	actionDeferred = new Action({
+		binds: getBinds("deferred.Deferred"),
+		label: "Deferred Action",
+		iconClass: "dijitIcon dijitIconFunction",
+		accelKey: "Ctrl+D",
+		title: "Execute Deferred",
+		enabled: true,
+		runningDisable: true,
+		runningLabel: "Running...",
+		run: function(){
+			console.log("deferred");
+			var deferred = new Deferred();
+			setTimeout(function(){ 
+				console.log("deferred resolve");
+				deferred.resolve({ called: true });
+			}, 2000);
+			return deferred;
+		}
 	});
 	
 	baseFx.fadeOut({

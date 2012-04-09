@@ -74,6 +74,18 @@ define([
 		// value: String
 		//		Corresponds to the native HTML <input> element's attribute.
 		value: "",
+		_set_value: function(value){
+			if(value){
+				this.toggled = true;
+			}else{
+				this.toggled = false;
+			}
+			this.value = value;
+		},
+		
+		// toggledValue: String
+		//		The value that the "value" attribute is set to when toggled=true.
+		toggledValue: "toggled",
 		
 		// readOnly: Boolean
 		//		Should this widget respond to user input?
@@ -85,6 +97,31 @@ define([
 		//		True if the button is depressed, or the checkbox is checked,
 		//		or the radio button is selected, etc.
 		toggled: false,
+		_set_toggled: function(value){
+			if(value){
+				this.set("value", this.toggledValue);
+			}else{
+				if(this.value){
+					this.toggledValue = this.value;
+				}
+				this.set("value", "");
+			}
+		},
+		
+		// runningDisable: Boolean
+		//		Disable the action while the action is running.  The running state only 
+		//		occurs when a Deferred is returned from the command.
+		runningDisable: false,
+		
+		// runningLabel: String
+		//		What a bound widgets label should be when the Action is running (like 
+		//		when waiting for a Deferred promise).
+		runningLabel: "",
+		
+		// timeout: Integer
+		//		Number of milliseconds the Action will wait for a Deferred to resolve, 
+		//		cancel or error out. `null` means it is disabled.
+		timout: null,
 		
 		// category: String
 		//		TODO: Add functionality for grouping of actions by category
@@ -104,6 +141,58 @@ define([
 		//		The scope of which the `this` should be when run is invoked.  Defaults 
 		//		to `null` which means `this` will be the Action itself.
 		scope: null,
+		
+		// _running: Boolean
+		//		A logic value that represents if the Action is currently running.  
+		//		It is only true when the run return value is a promise.
+		_running: false,
+		_get_running: function(){
+			return this._running;
+		},
+		_set_running: function(value){
+			if(value){
+				this._running = true;
+				if(this.runningDisable){
+					this._enabledState = this.get("enabled");
+					this.set("enabled", false);
+				}
+				if(this.runningLabel){
+					array.forEach(this._binds, function(widget){
+						if("label" in widget && !("busyLabel" in widget)){
+							if("showLabel" in widget){
+								var showLabel = widget.get("showLabel");
+							}
+							this._setAttr(widget, "label", "runningLabel");
+							if("showLabel" in widget){
+								widget.set("showLabel", showLabel);
+							}
+						}else if(typeof widget.makeBusy === "function"){
+							widget.makeBusy();
+						}
+					}, this);
+				}
+			}else{
+				if(this.runningLabel){
+					array.forEach(this._binds, function(widget){
+						if("label" in widget && !("busyLabel" in widget)){
+							if("showLabel" in widget){
+								var showLabel = widget.get("showLabel");
+							}
+							this._setAttr(widget, "label", "label");
+							if("showLabel" in widget){
+								widget.set("showLabel", showLabel);
+							}
+						}else if(typeof widget.cancel === "function"){
+							widget.cancel();
+						}
+					}, this);
+				}
+				if(this.runningDisable){
+					this.set("enabled", this._enabledState);
+				}
+				this._running = false;
+			}
+		},
 		
 		// _run: Function
 		//		Private attribute to hold a function that can define the 
@@ -150,6 +239,8 @@ define([
 			if(!params && !(binds instanceof Array)){
 				params = binds;
 			}
+			this._binds = [];
+			this._runHandles = [];
 			if (params){
 				if ("binds" in params){
 					binds = params.binds;
@@ -157,12 +248,15 @@ define([
 				}
 				this.set(params);
 			}
-			this._binds = [];
-			this._runHandles = [];
 			this._created = true;
 			if(binds && params && (binds instanceof Array) && binds.length){
 				this.bind(binds);
 			}
+		},
+		
+		markupFactory: function(params, node, ctor){
+			node.parentNode.removeChild(node);
+			return new ctor(params);
 		},
 		
 		run: function(){
@@ -188,9 +282,34 @@ define([
 				}else{
 					throw new Error("No suitable function found to run.");
 				}
-				this.emit("run", { result: result, args: arguments });
-				return result;
+				if (result && typeof result.then === "function"){
+					this.set("running", true);
+					var self = this;
+					this._runReturn = result;
+					this._runDeferred = result.then(function(data){
+						self.set("running", false);
+						self.toggle();
+						self.emit("run", { args: arguments, data: data, deferred: true });
+						return data;
+					});
+					return this._runDeferred;
+				}else{
+					this.toggle();
+					this.emit("run", { args: arguments, data: result, deferred: false });
+					return result;
+				}
 			}
+		},
+		
+		cancel: function(){
+			// summary:
+			//		Cancels any part of the Action that is inflight and sets Action's running state to false
+			if(this._runReturn && (this._runReturn.fired == -1)){
+				this._runReturn.cancel();
+			}
+			delete this._runReturn;
+			this._runDeferred = null;
+			this.set("running", false);
 		},
 		
 		toggle: function(){
@@ -207,16 +326,38 @@ define([
 			lang: "lang",
 			dir: "dir",
 			textDir: "textDir",
-			label: "label",
+			label: ["label", "_label"],  // _label works around issue with dojox.form.BusyButton
 			showLabel: "showLabel",
 			iconClass: "iconClass",
 			title: "title",
-			tooltip: "",
 			accelKey: "accelKey",
 			value: "value",
 			readOnly: "readOnly",
 			toggled: "checked",
+			runningLabel: "busyLabel",  // Used by dojox.form.BusyButton
+			timeout: "timeout", // Used by dojox.form.BusyButton
 			enabled: ["disabled", "enabled"]
+		},
+		
+		_setAttr: function(/*Widget*/ widget, /*String*/ widgetAttr, /*String*/ attr){
+			// summary:
+			//		Logic for proagating from an Action to a widget.
+			if(typeof widgetAttr === "string"){
+				if(widgetAttr in widget){
+					// TODO: Should we use direct assignment, avoiding events/watch?
+					widget.set(widgetAttr, this.get(attr));
+				}
+			}else{
+				array.forEach(widgetAttr, function(item){
+					if(item in widget){
+						if(item === "disabled" && attr === "enabled"){ //Handle one special setting
+							widget.set(item, !this.get(attr));
+						}else{
+							widget.set(item, this.get(attr));
+						}
+					}
+				}, this);
+			}
 		},
 		
 		_update: function(/*Widget*/ widget, /*String?*/ attr){
@@ -226,25 +367,6 @@ define([
 			//		A private function that takes a widget and propagates the mapped attributes 
 			//		from the Action to the widget.  If the optional `attr` is provided, it will 
 			//		only map that attribute.
-			
-			function setAttr(widget, widgetAttr, attr){
-				// summary:
-				//		Logic for proagating from and Action to a widget.
-				if(typeof widgetAttr === "string"){
-					if(widgetAttr in widget){
-						// TODO: Should we use direct assignment, avoiding events/watch?
-						widget.set(widgetAttr, this.get(attr));
-					}
-				}else{
-					array.forEach(widgetAttr, function(item){
-						if(item === "disabled" && attr === "enabled"){ //Handle one special setting
-							widget.set(item, !this.get(attr));
-						}else{
-							widget.set(item, this.get(attr));
-						}
-					}, this);
-				}
-			}
 			
 			if(!widget || !(typeof widget.set === "function")){
 				// Either nothing passed or this isn't something we can deal with
@@ -256,10 +378,10 @@ define([
 					var showLabel = widget.get("showLabel");
 				}
 				if(attr){ // Only a single attribute being set
-					setAttr.call(this, widget, attrMap[attr], attr);
+					this._setAttr(widget, attrMap[attr], attr);
 				}else{
 					for(var attr in attrMap){ // The whole map is done.
-						setAttr.call(this, widget, attrMap[attr], attr);
+						this._setAttr(widget, attrMap[attr], attr);
 					}
 				}
 				if("showLabel" in widget){

@@ -26,6 +26,8 @@
     <div id="context.edit.Copy" data-dojo-type="dijit/MenuItem"></div>
     <div id="context.edit.Cut" data-dojo-type="dijit/MenuItem"></div>
     <div id="context.edit.Paste" data-dojo-type="dijit/MenuItem"></div>
+    <div data-dojo-type="dijit/MenuSeparator"></div>
+    <div id="context.deferred.Deferred" data-dojo-type="dijit/MenuItem"></div>
   </div>
   <div data-dojo-type="dijit/layout/BorderContainer" id="mainContainer" data-dojo-props="gutters:true">
     <div data-dojo-type="dijit/layout/ContentPane" id="headerPane" data-dojo-props="splitter:false, region:'top'">
@@ -53,6 +55,12 @@
           <div id="menubar.edit.Paste" data-dojo-type="dijit/MenuItem"></div>
         </div>
       </div>
+      <div id="menubar.deferred" data-dojo-type="dijit/PopupMenuBarItem">
+        <span>Deferred</span>
+        <div id="menubar.deferredmenu" data-dojo-type="dijit/Menu">
+          <div id="menubar.deferred.Deferred" data-dojo-type="dijit/MenuItem"></div>
+        </div>
+      </div>
     </div>
     <div data-dojo-type="dijit/layout/TabContainer" id="mainTabContainer" data-dojo-props="region: 'center'">
       <div data-dojo-type="dijit/layout/ContentPane" id="tabWelcome" data-dojo-props="title: 'Action File'" style="padding: 0;">
@@ -72,6 +80,8 @@
           <div id="toolbar.edit.Copy" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
           <div id="toolbar.edit.Cut" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
           <div id="toolbar.edit.Paste" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div data-dojo-type="ToolbarSectionStart" data-dojo-props='label:"Deferred"'></div>
+          <div id="toolbar.deferred.Deferred" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
         </div>
         <div class="info">
           <p>This is a demonstration application that is designed to show how the classes <span 
@@ -113,6 +123,7 @@
           <button id="button.edit.Copy" data-dojo-type="dijit/form/Button" type="button"></button>
           <button id="button.edit.Cut" data-dojo-type="dijit/form/Button" type="button"></button>
           <button id="button.edit.Paste" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.deferred.Deferred" data-dojo-type="dojox/form/BusyButton" type="button"></button>
         </div>
       </div>
     </div>
