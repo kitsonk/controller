@@ -79,6 +79,39 @@
 		        t.is(typeof a1, "object", "declarative action created");
 		        t.is(registry.byId("button10").get("label"), "Declarative Action", "label bound");
 		      },
+		      function isBoundAndUnbind(t){
+		        var output = [];
+		        var action8 = new Action({
+		          binds: ["button13"],
+		          label: "Action 8",
+		          run: function(){
+		            output.push("action8");
+		          }
+		        });
+		        
+		        var button10 = registry.byId("button10");
+		        var button13 = registry.byId("button13");
+		        var button14 = registry.byId("button14");
+		        var button15 = registry.byId("button15");
+		        
+		        action8.bind(button14);
+		        var handle = action8.bind(button15);
+		        
+		        t.t(action8.isBound(button13), "widget bound to button");
+		        t.t(action8.isBound(button14), "widget bound to button");
+		        t.t(action8.isBound(button15), "widget bound to button");
+		        t.f(action8.isBound(button10), "widget is not bound to button");
+		        on.emit(dom.byId("button13"), "click", { bubbles: true });
+		        on.emit(dom.byId("button14"), "click", { bubbles: true });
+		        on.emit(dom.byId("button15"), "click", { bubbles: true });
+		        t.t(action8.unbind(button13), "widget unbound");
+		        t.f(action8.unbind(button10), "cannot unbind a bound widget");
+		        handle.unbind();
+		        on.emit(dom.byId("button13"), "click", { bubbles: true });
+		        on.emit(dom.byId("button14"), "click", { bubbles: true });
+		        on.emit(dom.byId("button15"), "click", { bubbles: true });
+		        t.is(output, ["action8", "action8", "action8", "action8"], "output matches expectations");
+		      },
 		      function checkAttributes(t){
 		        var output = [];
       			
@@ -166,6 +199,16 @@
 		            output.push("action7");
 		          }
 		        });
+		        
+		        var button12 = new Button({
+		          id: "button12",
+		          label: "Button12",
+		          action: action7
+		        }, "button12");
+		        
+		        on.emit(dom.byId("button12"), "click", { bubbles: true });
+		        
+		        t.is(output, ["action7"], "output matches expected");
 		      },
 		      function running(t){
 		        var td = new doh.Deferred();
@@ -242,6 +285,9 @@
 	  <input type="text" id="textBox1" lang="fr" dir="rtl" value="value" />
 	</div>
 	<button type="button" id="button12">Button 12</button>
+	<button type="button" id="button13" data-dojo-type="dijit/form/Button">Button13</button>
+	<button type="button" id="button14" data-dojo-type="dijit/form/Button">Button14</button>
+	<button type="button" id="button15" data-dojo-type="dijit/form/Button">Button15</button>
 	<div id="a1" data-dojo-id="a1" data-dojo-type="dojo-controller/action/Action" data-dojo-props="binds: ['button10'], label: 'Declarative Action'"></div>
 	<div data-dojo-type="dijit/Menu" id="windowContextMenu" data-dojo-props="contextMenuForWindow: true" style="display: none;">
 	  <div data-dojo-type="dijit/MenuItem" id="menuItem1">Menu Item 1</div>

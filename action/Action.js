@@ -8,14 +8,25 @@ define([
 		"../Attributed"
 ], function(declare, array, lang, on, _WidgetBase, registry, Attributed){
 
+// module:
+//		dojo-controller/action/Action
+// summary:
+//		A class that builds upon dojo/Stateful and dojo/Evented by adding on 
+//		auto-magic getters and setters functionality as well as emitting events
+//		when attributes change their value.
+	
 	lang.extend(_WidgetBase, {
+		// Extending _WidgetBase so that widgets can have their Action bound by 
+		// setting the `action` attribute on the widget.  For example 
+		// `myWidget.set("action", action);` would work.
 		
 		// Providing a link to the bound Action
 		action: null,
 		
 		// Handles the binding and unbinding of a widget
 		_setActionAttr: function(value){
-			if(this.action){
+			if(this.action && this.action.unbind){
+				// There already is some action bound, unbind it first
 				this.action.unbind(this);
 			}
 			if(value && value.isBound && !value.isBound(this)){
@@ -137,7 +148,7 @@ define([
 		runningLabel: "",
 		
 		// timeout: Integer
-		//		Number of milliseconds the Action will wait for a Deferred to resolve, 
+		//		Number of milliseconds the Action will wait for a promise to resolve, 
 		//		cancel or error out. `null` means it is disabled.
 		timout: null,
 		
@@ -254,6 +265,9 @@ define([
 		_runHandles: [],
 		
 		postscript: function(/*Array?*/ binds, /*Object?*/ params){
+			// summary:
+			//		Handles setting up the action post construction
+			
 			if(!params && !(binds instanceof Array)){
 				params = binds;
 			}
@@ -273,6 +287,9 @@ define([
 		},
 		
 		markupFactory: function(params, node, ctor){
+			// summary:
+			//		Allows the dojo/parser to instantiate a declarative Action
+			
 			node.parentNode.removeChild(node);
 			return new ctor(params);
 		},
@@ -287,6 +304,7 @@ define([
 			//		on that CommandStack.
 			//
 			//		After a run, it will emit a "run" event and return the result.
+			
 			if(this.get("enabled")){
 				var result;
 				if(this._run && (typeof this._run === "function")){
@@ -322,6 +340,7 @@ define([
 		cancel: function(){
 			// summary:
 			//		Cancels any part of the Action that is inflight and sets Action's running state to false
+			
 			if(this._runReturn && (this._runReturn.fired == -1)){
 				this._runReturn.cancel();
 			}
@@ -333,6 +352,7 @@ define([
 		toggle: function(){
 			// summary:
 			//		Inverts the Boolean value of the toggled attribute.
+			
 			this.set("toggled", !this.get("toggled"));
 			return this.get("toggled");
 		},
@@ -348,6 +368,7 @@ define([
 			showLabel: "showLabel",
 			iconClass: "iconClass",
 			title: "title",
+			tooltip: "tooltip",
 			accelKey: "accelKey",
 			value: "value",
 			readOnly: "readOnly",
@@ -408,24 +429,17 @@ define([
 			}
 		},
 		
-		_bindRun: function(/*Object*/ widget){
-			// summary:
-			//		Binds the "click" event on the widget to the run method on the Action
-			var self = this;
-			this._runHandles.push(on(widget, "click", function(e){
-				self.run.call(self, e);
-			}));
-		},
-		
 		bind: function(/*String|Object*/ widget){
 			// summary:
 			//		Binds a widget to the Action.
+			//
 			// description:
 			//		Takes the widget passed as an argument and binds it to the Action 
 			//		so that the widget's "click" event executes the Action.run() as well
 			//		as propagates attribute settings from the Action to the widget.  Also sets 
 			//		the widget up so that when a attribute value is changed on the Action that 
 			//		is also propagated to the widget.
+			
 			if(typeof widget === "string"){
 				widget = registry.byId(widget);
 			}
@@ -436,25 +450,63 @@ define([
 			if(!widget || !widget.set || (typeof widget.set !== "function")){
 				throw new Error("Invalid object passed to bind.");
 			}
-			if(widget._action){
+			if(widget.action && widget.action !== this){
 				throw new Error("Widget already bound.");
 			}
-			if(widget.action){
+			if("action" in widget){
 				widget.action = this;
 			}
 			this._binds.push(widget);
-			this._bindRun(widget);
-			this._update(widget);
 			var self = this;
-			return {
+			this._runHandles.push(on(widget, "click", function(e){
+				self.run.call(self, e);
+			}));
+			this._update(widget);
+			var handle = {
 				unbind: function(){
-					self.unbind(widget);
+					return self.unbind(widget);
 				}
+			}
+			this.emit("bound", { action: this, widget: widget, handle: handle });
+			return handle;
+		},
+		
+		unbind: function(/*String|Object*/ widget){
+			// summary:
+			//		Unbinds a widget from an action.
+			//
+			// description:
+			//		Takes a widget or string ID of a widget and unbinds it from the action.
+			//		Unbinding only removes the "run" from being fired and the widget's other 
+			//		attributes will be left configured as they were, but changes to the 
+			//		action will no longer propagate to the widget.
+			//
+			// returns: Boolean
+			//		`true` if sucessfully unbound or `false` if the widget could not be 
+			//		found.
+			
+			if(typeof widget === "string"){
+				widget = registry.byId(widget);
+			}
+			if(this.isBound(widget)){
+				if(widget.action === this){
+					widget.action = null;
+				}
+				var idx = array.indexOf(this._binds, widget);
+				this._binds.splice(idx, 1);
+				this._runHandles.splice(idx, 1)[0].remove();
+				this.emit("unbound", { action: this, widget: widget });
+				return true;
+			}else{
+				return false;
 			}
 		},
 		
-		unbind: function(widget){
-			
+		isBound: function(/*Object*/ widget){
+			// summary:
+			//		Returns `true` if this action is bound to widget otherwise
+			//		returns `false`.
+			return ~array.indexOf(this._binds, widget);
 		},
 		
 		onchanged: function(/*Object*/ e){
