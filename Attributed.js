@@ -198,7 +198,9 @@ define([
 			//
 			// description:
 			//		Directly change the value of an attribute on an object, bypassing any 
-			//		accessor setter.  Also handles the calling of watch and emitting events
+			//		accessor setter.  Also handles the calling of watch and emitting events. 
+			//		It is designed to be used by descendent class when there are two values 
+			//		of attributes that are linked, but calling .set() is not appropriate.
 			
 			var oldValue = this.get(name);
 			this[name] = value;

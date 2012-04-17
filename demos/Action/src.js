@@ -11,8 +11,10 @@ require([
 	"dojo-controller/command/CommandStack",
 	"dijit/layout/ContentPane", 
 	"dijit/form/Button",
+	"dijit/form/ToggleButton",
 	"dijit/layout/BorderContainer",
 	"dijit/layout/TabContainer",
+	"dijit/CheckedMenuItem",
 	"dijit/Declaration",
 	"dijit/Menu",
 	"dijit/MenuBar",
@@ -239,6 +241,16 @@ function(parser, array, Deferred, baseFx, lang, style, registry, Action, Command
 				deferred.resolve({ called: true });
 			}, 2000);
 			return deferred;
+		}
+	}),
+	actionToggle = new Action({
+		binds: getBinds("toggle.Toggle"),
+		label: "Toggle",
+		iconClass: "dijitIcon dijitIconBookmark",
+		accelKey: "Ctrl+T",
+		title: "Toggle Me!",
+		run: function(){
+			
 		}
 	});
 	

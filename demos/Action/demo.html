@@ -28,6 +28,8 @@
     <div id="context.edit.Paste" data-dojo-type="dijit/MenuItem"></div>
     <div data-dojo-type="dijit/MenuSeparator"></div>
     <div id="context.deferred.Deferred" data-dojo-type="dijit/MenuItem"></div>
+    <div data-dojo-type="dijit/MenuSeparator"></div>
+    <div id="context.toggle.Toggle" data-dojo-type="dijit/CheckedMenuItem"></div>
   </div>
   <div data-dojo-type="dijit/layout/BorderContainer" id="mainContainer" data-dojo-props="gutters:true">
     <div data-dojo-type="dijit/layout/ContentPane" id="headerPane" data-dojo-props="splitter:false, region:'top'">
@@ -61,6 +63,12 @@
           <div id="menubar.deferred.Deferred" data-dojo-type="dijit/MenuItem"></div>
         </div>
       </div>
+      <div id="menubar.toggle" data-dojo-type="dijit/PopupMenuBarItem">
+        <span>Toggle</span>
+        <div id="menubar.togglemenu" data-dojo-type="dijit/Menu">
+          <div id="menubar.toggle.Toggle" data-dojo-type="dijit/CheckedMenuItem"></div>
+        </div>
+      </div>
     </div>
     <div data-dojo-type="dijit/layout/TabContainer" id="mainTabContainer" data-dojo-props="region: 'center'">
       <div data-dojo-type="dijit/layout/ContentPane" id="tabWelcome" data-dojo-props="title: 'Action File'" style="padding: 0;">
@@ -82,6 +90,21 @@
           <div id="toolbar.edit.Paste" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
           <div data-dojo-type="ToolbarSectionStart" data-dojo-props='label:"Deferred"'></div>
           <div id="toolbar.deferred.Deferred" data-dojo-type="dijit/form/Button" data-dojo-props="showLabel: false"></div>
+          <div data-dojo-type="ToolbarSectionStart" data-dojo-props='label:"Toggle"'></div>
+          <div id="toolbar.toggle.Toggle" data-dojo-type="dijit/form/ToggleButton" data-dojo-props="showLabel: false"></div>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane">
+          <button id="button.file.New" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.file.Open" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.file.Close" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.file.Save" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Undo" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Redo" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Copy" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Cut" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.edit.Paste" data-dojo-type="dijit/form/Button" type="button"></button>
+          <button id="button.deferred.Deferred" data-dojo-type="dojox/form/BusyButton" type="button"></button>
+          <button id="button.toggle.Toggle" data-dojo-type="dijit/form/ToggleButton" type="button"></button>
         </div>
         <div class="info">
           <p>This is a demonstration application that is designed to show how the classes <span 
@@ -106,24 +129,19 @@
             encapsulates features of applications that allow you to expose redo and undo functionality.</p>
         </div>
         <div class="info">
-          <p>There are 4 areas in this demo where a set of <span class="code">Action</span>s are being bound to widgets.  This is in the menu, toolbar, context menu and the buttons below.</p>
+          <p>There are 4 areas in this demo where a set of <span class="code">Action</span>s are being bound to widgets. 
+            This is in the menu, toolbar, context menu and the buttons.</p>
           <p>You can see that none of the visual elements have been set until the <span class="code">Action</span> was
             bound to the widget.  In addition, the <strong>Copy</strong>, <strong>Cut</strong> and
             <strong>Paste</strong> buttons utilise a <span class="code">CommandStack</span> and the stack is interfacing
             with the <strong>Undo</strong> and <strong>Redo</strong> actions.  You can see that as things change, they
             are reflected across all the UI elements that expose the behaviour without additional code.</p>
-        </div>
-        <div data-dojo-type="dijit/layout/ContentPane">
-          <button id="button.file.New" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.file.Open" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.file.Close" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.file.Save" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.edit.Undo" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.edit.Redo" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.edit.Copy" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.edit.Cut" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.edit.Paste" data-dojo-type="dijit/form/Button" type="button"></button>
-          <button id="button.deferred.Deferred" data-dojo-type="dojox/form/BusyButton" type="button"></button>
+          <p>The Deferred UI elements are bound to an <span class="code">Action</span> that returns a Deferred promise 
+            and it automatically detects this.  It will set itself disabled, thereby disabling all the bound widgets and 
+            change the label.  Once the promise is resolved, the <span class="code">Action</span> will reset itself and 
+            the associated widgets.  This is great to deal with code that operates in an async fashion.  The Toggle UI
+            elements are bound to a single <span class="code">Action<span>, and while the run of the action does
+            nothing, all the widgets automatically keep their toggled/checked state in sync with each other.</p>
         </div>
       </div>
     </div>
