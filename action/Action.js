@@ -1,10 +1,28 @@
 define([
 		"dojo/_base/declare", // declare declare.safeMixin
 		"dojo/_base/array", // array.forEach
+		"dojo/_base/lang", // lang.extend
 		"dojo/on", // on()
+		"dijit/_WidgetBase",
 		"dijit/registry", // registry.byId
 		"../Attributed"
-], function(declare, array, on, registry, Attributed){
+], function(declare, array, lang, on, _WidgetBase, registry, Attributed){
+
+	lang.extend(_WidgetBase, {
+		
+		// Providing a link to the bound Action
+		action: null,
+		
+		// Handles the binding and unbinding of a widget
+		_setActionAttr: function(value){
+			if(this.action){
+				this.action.unbind(this);
+			}
+			if(value && value.isBound && !value.isBound(this)){
+				value.bind(this);
+			}
+		}
+	});
 
 	return declare([Attributed], {
 		
@@ -421,7 +439,9 @@ define([
 			if(widget._action){
 				throw new Error("Widget already bound.");
 			}
-			widget._action = this;
+			if(widget.action){
+				widget.action = this;
+			}
 			this._binds.push(widget);
 			this._bindRun(widget);
 			this._update(widget);

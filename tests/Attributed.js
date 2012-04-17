@@ -26,12 +26,12 @@ doh.register("tests.Attributed",
 			attr1.set("bar", 2);
 			attr1.set("baz", "bar");
 			
-			t.is(attr1.foo, "nothing");
-			t.is(attr1.get("foo"), "bar");
-			t.is(attr1.bar, 2);
-			t.is(attr1.get("bar"), 2);
-			t.is(attr1.get("baz"), "bar");
-			t.is(attr1.baz, "bar");
+			t.is(attr1.foo, "nothing", "attribute set properly");
+			t.is(attr1.get("foo"), "bar", "getter working properly");
+			t.is(attr1.bar, 2, "attribute set properly");
+			t.is(attr1.get("bar"), 2, "getter working properly");
+			t.is(attr1.get("baz"), "bar", "getter working properly");
+			t.is(attr1.baz, "bar", "properly set properly");
 		},
 		function paramHandling(t){
 			var AttrClass2 = declare([Attributed], {
@@ -53,9 +53,9 @@ doh.register("tests.Attributed",
 				bar: 4
 			});
 			
-			t.is(typeof attr2.foo, "function");
-			t.is(attr2.foo(), "baz");
-			t.is(attr2.get("bar"), 4);
+			t.is(typeof attr2.foo, "function", "function attribute set");
+			t.is(attr2.foo(), "baz", "function has proper return value");
+			t.is(attr2.get("bar"), 4, "attribute has proper value");
 		},
 		function hashSetting(t){
 			var AttrClass3 = declare([Attributed], {
@@ -78,9 +78,9 @@ doh.register("tests.Attributed",
 				bar: 4
 			});
 			
-			t.is(typeof attr3.foo, "function");
-			t.is(attr3.foo(), "baz");
-			t.is(attr3.get("bar"), 4);
+			t.is(typeof attr3.foo, "function", "function attribute set");
+			t.is(attr3.foo(), "baz", "function has proper return value");
+			t.is(attr3.get("bar"), 4, "attribute has proper value");
 		},
 		function watchHandling(t){
 			var output = [];
@@ -111,8 +111,8 @@ doh.register("tests.Attributed",
 			handle2.unwatch();
 			attr4.set("foo", "again");
 			
-			t.is(output, ["foo", "old", "new", "foo", "old", "new", "bar", 0, 1]);
-			t.is(attr4.get("foo"), "again");
+			t.is(output, ["foo", "old", "new", "foo", "old", "new", "bar", 0, 1], "output matches expectations");
+			t.is(attr4.get("foo"), "again", "attribute has correct value");
 		},
 		function globalAccessors(t){
 			var output = [];
@@ -147,9 +147,9 @@ doh.register("tests.Attributed",
 			var result1 = attr5.get("foo");
 			var result2 = attr5.get("bar");
 			
-			t.is(output, ["foo", "foo", "baz", 5, "foo"]);
-			t.is(result1, "baz");
-			t.is(result2, 5);
+			t.is(output, ["foo", "foo", "baz", 5, "foo"], "output matches expectations");
+			t.is(result1, "baz", "attribute has correct value");
+			t.is(result2, 5, "attribute has correct value");
 		},
 		function eventFunctionality(t){
 			var output = [];
@@ -177,18 +177,59 @@ doh.register("tests.Attributed",
 			
 			t.is(output, ["foo", "bar", "baz", "bar", "baz", "bar", 1, 6]);
 		},
+		function legacyAccessors(t){
+			var output = [];
+			var AttrClass7 = declare([Attributed],{
+				foo: "",
+				bar: 0,
+				_setFooAttr: function(value){
+					output.push(value);
+					this.foo = value;
+				},
+				_setBarAttr: function(value){
+					output.push(value);
+					this.bar = value;
+				},
+				_getFooAttr: function(){
+					output.push("_getFooAttr");
+					return this.foo;
+				},
+				_getBarAttr: function(){
+					output.push("_getBarAttr");
+					return this.bar;
+				}
+			});
+			
+			var attr7 = new AttrClass7();
+			attr7.watch("foo", function(){
+				output.push("watch.foo");
+			});
+			attr7.watch("bar", function(){
+				output.push("watch.bar");
+			});
+			attr7.on("changed", function(){
+				output.push("changed");
+			});
+			
+			attr7.set("foo", "baz");
+			attr7.set("bar", 1);
+			
+			t.is(attr7.get("foo"), "baz", "attribute set");
+			t.is(attr7.get("bar"), 1, "attribute set");
+			t.is(output, ["_getFooAttr", "baz", "watch.foo", "changed", "_getBarAttr", 1, "watch.bar", "changed", "_getFooAttr", "_getBarAttr"], "results match expectations");
+		},
 		function featureDetection(t){
 			var hasDefineProperty = has("es5-defineproperty");
 			if (has("ie") <= 8){
-				t.is(hasDefineProperty, false);
+				t.is(hasDefineProperty, false, "has defined properly");
 			}else{
-				t.is(hasDefineProperty, true);
+				t.is(hasDefineProperty, true, "has defined properly");
 			}
 			var hasAccessors = has("accessors");
 			if (has("ie") <= 8){
-				t.is(hasAccessors, false);
+				t.is(hasAccessors, false, "has defined properly");
 			}else{
-				t.is(hasAccessors, true);
+				t.is(hasAccessors, true, "has defined properly");
 			}
 		}
 	]

@@ -9,7 +9,8 @@ define([
 //		dojo-controller/Attributed
 // summary:
 //		A class that builds upon dojo/Stateful and dojo/Evented by adding on 
-//		auto-magic getters and setters functionality.
+//		auto-magic getters and setters functionality as well as emitting events
+//		when attributes change their value.
 
 	// Feature detection of fully compliant ES5 defineProperty, IE8's defineProperty is not 
 	// es5 compliant.
@@ -46,11 +47,16 @@ define([
 		//		Getters and Setters should follow the format of _get_xxx or _set_xxx where 
 		//		the xxx is a name of the attribute to handle.  So an attribute of "foo" 
 		//		would have a custom getter of _get_foo and a custom setter of _set_foo.
+		//
+		//		Global accessors that are supported, which are _getter and _setter and 
+		//		will be called if defined versus reverting to directly accessing the 
+		//		attribute/property.
 		
 		// _attrPairNames: Hash
 		//		Used across all instances a hash to cache attribute names and their getter 
 		//		and setter names.
 		_attrPairNames: {},
+		
 		_getAttrNames: function(name){
 			// summary:
 			//		Helper function for get() and set().
@@ -70,7 +76,10 @@ define([
 		},
 		
 		postscript: function(/*Object?*/ params){
+			// Automatic setting of params during construction
 			if (params){ this.set(params); }
+			
+			// Flag to ensure that changes aren't emitted or watched during initialisation
 			this._created = true;
 		},
 		
@@ -87,38 +96,48 @@ define([
 		get: function(name){
 			// summary:
 			//		Get a property from an object.
+			//
 			//	name:
 			//		The property to get.
+			//
 			// description:
 			//		Get a named property from an object. The property may
 			//		potentially be retrieved via a getter method. If no getter is defined, this
 			//		just retrieves the object's property.
 			//
 			//		For example, if the widget has properties `foo` and `bar`
-			//		and a method named `_getFoo()`, calling:
+			//		and a method named `_get_foo()`, calling:
 			//		`myObject.get("foo")` would be equivalent to calling
-			//		`myObject._getFoo()` and `myObject.get("bar")`
+			//		`myObject._get_foo()` and `myObject.get("bar")`
 			//		would be equivalent to the expression
 			//		`myObject.bar`
+			// returns:
+			//		The value of the property.
+			
 			return this._get(name, this._getAttrNames(name));
 		},
 
 		set: function(name, value){
 			// summary:
 			//		Set a property on a widget
-			//	name:
+			//
+			//	name: String|Object
 			//		The property to set or an object that is a hash of properties and values.
-			//	value:
+			//
+			//	value: Mixed
 			//		The value to set in the property.
+			//
 			// description:
 			//		Sets named properties on a object which may potentially be handled by a
 			//		setter in the widget.
 			//
 			//		For example, if the object has properties `foo` and `bar`
-			//		and a method named `_setFoo()`, calling
+			//		and a method named `_set_foo()`, calling
 			//		`myObject.set("foo", "Howdy!")` would be equivalent to calling
-			//		`obj._setFoo("Howdy!")` and `myObject.set("bar", 3)`
-			//		would be equivalent to the statement `obj.bar = 3;`
+			//		`obj._set_foo("Howdy!")` and `myObject.set("bar", 3)`
+			//		would be equivalent to the statement `obj.bar = 3;` except that there 
+			//		is no way of emitting events or triggering watches when the value is 
+			//		set directly.
 			//
 			//		set() may also be called with a hash of name/value pairs, ex:
 			//
@@ -129,6 +148,7 @@ define([
 			//
 			//	This is equivalent to calling `set(foo, "Howdy")` and `set(bar, 3)`
 
+			// If an object is used, iterate through object
 			if(typeof name === "object"){
 				for(var x in name){
 					this.set(x, name[x]);
@@ -170,15 +190,16 @@ define([
 		_changeAttrValue: function(name, value){
 			// summary:
 			//		Internal helper for directly changing an attribute value.
-			//	name:
-			//		The property to set or an object that is a hash of properties and values.
-			//	value:
+			//
+			//	name: String
+			//		The property to set.
+			//	value: Mixed
 			//		The value to set in the property.
-			//	oldValue:
-			//		Provide if the value may have already been change before calling the method.
+			//
 			// description:
 			//		Directly change the value of an attribute on an object, bypassing any 
-			//		accessor setter.  Also handles the calling of watch.
+			//		accessor setter.  Also handles the calling of watch and emitting events
+			
 			var oldValue = this.get(name);
 			this[name] = value;
 			if(this._watchCallbacks){

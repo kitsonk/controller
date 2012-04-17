@@ -158,6 +158,15 @@
       			t.is(textBox1.get("value"), "action", "value restored");
       			
 		      },
+		      function widgetBinding(t){
+		        var output = [];
+		        var action7 = new Action({
+		          label: "Action 7",
+		          run: function(){
+		            output.push("action7");
+		          }
+		        });
+		      },
 		      function running(t){
 		        var td = new doh.Deferred();
 		        var output = [];
@@ -232,6 +241,7 @@
 	  <button type="button" id="button11" lang="fr" dir="rtl">Button 11</button>
 	  <input type="text" id="textBox1" lang="fr" dir="rtl" value="value" />
 	</div>
+	<button type="button" id="button12">Button 12</button>
 	<div id="a1" data-dojo-id="a1" data-dojo-type="dojo-controller/action/Action" data-dojo-props="binds: ['button10'], label: 'Declarative Action'"></div>
 	<div data-dojo-type="dijit/Menu" id="windowContextMenu" data-dojo-props="contextMenuForWindow: true" style="display: none;">
 	  <div data-dojo-type="dijit/MenuItem" id="menuItem1">Menu Item 1</div>
