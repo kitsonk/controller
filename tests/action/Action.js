@@ -76,7 +76,7 @@ doh.register("tests.action.Action",
 			t.is(output, ["baz", "qux"]);
 		},
 		function runningSupport(t){
-			var td = new doh.Deferred;
+			var td = new doh.Deferred();
 			var output = [];
 			var action5 = new Action({
 				run: function(){
@@ -95,11 +95,40 @@ doh.register("tests.action.Action",
 			});
 			action5.run().then(function(result){
 				output.push(result);
-				console.log(output);
+				t.is(output, ["running", false, true, "running", true, false, 
+					{ args: [{ called: true }], data: { called: true }, deferred: true }, 
+					{ called: true }], "output matches expectations");
 				td.callback(true);
 			}, function(err){
 				console.error(err);
-				td.callback(false);
+			});
+			return td;
+		},
+		function timeoutSupport(t){
+			var td = new doh.Deferred();
+			var output = [];
+			var action5 = new Action({
+				timeout: 50,
+				run: function(){
+					var deferred = new Deferred();
+					setTimeout(function(){
+						output.push("called");
+					}, 100);
+					return deferred;
+				}
+			});
+			action5.on("run", function(e){
+				output.push(e);
+			});
+			action5.on("cancelled", function(e){
+				output.push(e);
+				t.is(output, [{ reason: "timeout" }], "output matches expectations");
+				td.callback(true);
+			});
+			action5.run().then(function(result){
+				output.push(result);
+			}, function(err){
+				output.push(err);
 			});
 			return td;
 		}

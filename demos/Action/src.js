@@ -1,7 +1,7 @@
 require([
 	"dojo/parser", // parser.parse
 	"dojo/_base/array", // array.forEach
-	"dojo/_base/Deferred", // Deferred
+	"dojo/Deferred", // Deferred
 	"dojo/_base/fx", // baseFx.fadeOut
 	"dojo/_base/lang", // lang.setObject
 	"dojo/dom-style", // style.set

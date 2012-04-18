@@ -150,7 +150,7 @@ define([
 		// timeout: Integer
 		//		Number of milliseconds the Action will wait for a promise to resolve, 
 		//		cancel or error out. `null` means it is disabled.
-		timout: null,
+		timeout: null,
 		
 		// category: String
 		//		TODO: Add functionality for grouping of actions by category
@@ -320,6 +320,7 @@ define([
 				}
 				if (result && typeof result.then === "function"){
 					this.set("running", true);
+					this.resetTimeout(this.timeout);
 					var self = this;
 					this._runReturn = result;
 					this._runDeferred = result.then(function(data){
@@ -337,7 +338,7 @@ define([
 			}
 		},
 		
-		cancel: function(){
+		cancel: function(/*String?*/ reason){
 			// summary:
 			//		Cancels any part of the Action that is inflight and sets Action's running state to false
 			
@@ -347,6 +348,22 @@ define([
 			delete this._runReturn;
 			this._runDeferred = null;
 			this.set("running", false);
+			this.emit("cancelled", { reason: reason });
+		},
+		
+		resetTimeout: function(/*Int*/ timeout){
+			if(this._timeout){
+				clearTimeout(this._timeout);
+			}
+			
+			if(timeout){
+				var self = this;
+				this._timeout = setTimeout(function(){
+					self.cancel("timeout");
+				}, timeout);
+			}else if(timeout === 0){
+				this.cancel("timeout");
+			}
 		},
 		
 		toggle: function(){
