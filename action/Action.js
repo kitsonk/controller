@@ -352,6 +352,9 @@ define([
 		},
 		
 		resetTimeout: function(/*Int*/ timeout){
+			// summary:
+			//		Resets (or cancels) the timeout that will cancel the running state of the Action
+			
 			if(this._timeout){
 				clearTimeout(this._timeout);
 			}
