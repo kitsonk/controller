@@ -5,8 +5,9 @@ define([
 		"dojo/on", // on()
 		"dijit/_WidgetBase",
 		"dijit/registry", // registry.byId
-		"../Attributed"
-], function(declare, array, lang, on, _WidgetBase, registry, Attributed){
+		"dojo/Stateful",
+		"dojo/Evented"
+], function(declare, array, lang, on, _WidgetBase, registry, Stateful, Evented){
 
 // module:
 //		dojo-controller/action/Action
@@ -35,7 +36,7 @@ define([
 		}
 	});
 
-	return declare([Attributed], {
+	return declare([Stateful, Evented], {
 		
 		// lang: [const] String
 		//		Rarely used.  Overrides the default Dojo locale used to render this widget,
@@ -103,7 +104,7 @@ define([
 		// value: String
 		//		Corresponds to the native HTML <input> element's attribute.
 		value: "",
-		_set_value: function(value){
+		_valueSetter: function(value){
 			if(value){
 				this.toggled = true;
 			}else{
@@ -126,7 +127,7 @@ define([
 		//		True if the button is depressed, or the checkbox is checked,
 		//		or the radio button is selected, etc.
 		toggled: false,
-		_set_toggled: function(value){
+		_toggledSetter: function(value){
 			if(value){
 				this.set("value", this.toggledValue);
 			}else{
@@ -159,10 +160,10 @@ define([
 		// enabled: Boolean
 		//		Should this widget respond to user input?
 		_enabled: true,
-		_get_enabled: function(){
+		_enabledGetter: function(){
 			return this._enabled;
 		},
-		_set_enabled: function(value){
+		_enabledSetter: function(value){
 			this._enabled = value;
 		},
 		
@@ -175,10 +176,10 @@ define([
 		//		A logic value that represents if the Action is currently running.  
 		//		It is only true when the run return value is a promise.
 		_running: false,
-		_get_running: function(){
+		_runningGetter: function(){
 			return this._running;
 		},
-		_set_running: function(value){
+		_runningSetter: function(value){
 			if(value){
 				this._running = true;
 				if(this.runningDisable){
@@ -228,30 +229,30 @@ define([
 		//		behaviour of the Action.  Typically though a command/Command is 
 		//		used to encapsulate the behaviour.
 		_run: null,
-		_get_run: function(){
+		_runGetter: function(){
 			return this._run;
 		},
-		_set_run: function(value){
+		_runSetter: function(value){
 			this._run = value;
 		},
 		
 		// _command: Object
 		//		The private attribute 
 		_command: null,
-		_get_command: function(){
+		_commandGetter: function(){
 			return this._command;
 		},
-		_set_command: function(value){
+		_commandSetter: function(value){
 			this._command = value;
 		},
 		
 		// _commandStack: Object
 		//		The private attribute
 		_commandStack: null,
-		_get_commandStack: function(){
+		_commandStackGetter: function(){
 			return this._commandStack;
 		},
-		_set_commandStack: function(value){
+		_commandStackSetter: function(value){
 			this._commandStack = value;
 		},
 		
@@ -273,7 +274,7 @@ define([
 			}
 			this._binds = [];
 			this._runHandles = [];
-			if (params){
+			if(params){
 				if ("binds" in params){
 					binds = params.binds;
 					delete params.binds;
@@ -281,6 +282,7 @@ define([
 				this.set(params);
 			}
 			this._created = true;
+			this.watch(this._watch);
 			if(binds && params && (binds instanceof Array) && binds.length){
 				this.bind(binds);
 			}
@@ -529,13 +531,13 @@ define([
 			return ~array.indexOf(this._binds, widget);
 		},
 		
-		onchanged: function(/*Object*/ e){
+		_watch: function(attrName, oldValue, value){
 			// summary:
 			//		Called from ancestor Attributed when an attribute value is changed and then 
 			//		propagates that change, if appropriate to any bound widgets.
-			if(e.attrName in this._attrMapping){
+			if(attrName in this._attrMapping){
 				array.forEach(this._binds, function(widget){
-					this._update(widget, e.attrName);
+					this._update(widget, attrName);
 				}, this);
 			}
 		}		

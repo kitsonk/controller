@@ -1,7 +1,8 @@
 define([
 		"dojo/_base/declare", // declare declare.safeMixin
-		"../Attributed"
-], function(declare, Attributed){
+		"dojo/Stateful",
+		"dojo/Evented"
+], function(declare, Stateful, Evented){
 
 // module:
 //		dojo-controller/command/Command
@@ -9,7 +10,7 @@ define([
 //		An object that allows abstraction and management of "command" 
 //		type logic.
 
-	return declare([Attributed], {
+	return declare([Stateful, Evented], {
 		// summary:
 		//		An object that allows abstraction and management of "command" 
 		//		type logic.
@@ -81,12 +82,12 @@ define([
 				console.warn("Command: .execute() not set but called.");
 			}
 		},
-		_set_execute: function(value){
+		_executeSetter: function(value){
 			// summary:
 			//		Set the execute function
 			this._execute = value;
 		},
-		_get_execute: function(){
+		_executeGetter: function(){
 			// summary:
 			//		Get the execute function
 			return this._execute;
@@ -113,24 +114,23 @@ define([
 				console.warn("Command: .undo() not set but called.");
 			}
 		},
-		_set_undo: function(value){
+		_undoSetter: function(value){
 			// summary:
 			//		Set the undo function
 			this._undo = value;
 		},
-		_get_undo: function(){
+		_undoGetter: function(){
 			// summary:
 			//		Get the undo function
 			return this._undo;
 		},
 		
-		_get_undoable: function(){
+		_undoableGetter: function(){
 			// summary:
 			//		Customer getter for `undoable` attribute.
 			return typeof this._undo === "function";
 		},
-		
-		_set_undoable: function(value){
+		_undoableSetter: function(value){
 			// summary:
 			//		Customer setter for `undoable` attribute.
 			console.warn("Command: undoable is a read-only attribute.");
@@ -156,11 +156,10 @@ define([
 			this.inherited(arguments);
 		},
 		
-		_get_context: function(){
+		_contextGetter: function(){
 			return this._context;
 		},
-		
-		_set_context: function(value){
+		_contextSetter: function(value){
 			this._context = value;
 		}
 		

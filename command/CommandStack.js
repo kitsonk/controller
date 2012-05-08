@@ -1,9 +1,10 @@
 define([
 		"dojo/_base/declare", // declare declare.safeMixin
 		"dojo/_base/window", // win.withDoc
-		"../Attributed"
-], function(declare, win, Attributed){
-	return declare([Attributed], {
+		"dojo/Stateful",
+		"dojo/Evented"
+], function(declare, win, Stateful, Evented){
+	return declare([Stateful, Evented], {
 		
 		// _undoStack: Array
 		//		Private array used for storing commands that can be undone.
@@ -137,43 +138,40 @@ define([
 			}
 		},
 		
-		_get_canUndo: function(){
+		_canUndoGetter: function(){
 			// summary:
 			//		Attribute getter for canUndo
 			return (this._undoStack.length > 0);
 		},
-		
-		_set_canUndo: function(value){
+		_canUndoSetter: function(value){
 			// summary:
 			//		Attribute setter for canUndo
 			console.warn("CommandStack: canUndo is a read-only attribute");
 		},
 		
-		_get_canRedo: function(){
+		_canRedoGetter: function(){
 			// summary:
 			//		Attribute getter for canRedo
 			return (this._redoStack.length > 0);
 		},
-		
-		_set_canRedo: function(){
+		_canRedoSetter: function(){
 			// summary:
 			//		Attribute setter for canRedo
 			console.warn("CommandStack: canRedo is a read-only attribute");
 		},
 		
-		_get_undoCount: function(){
+		_undoCountGetter: function(){
 			// summary:
 			//		Attribute getter for undoCount
 			return this._undoStack.length;
 		},
-		
-		_set_undoCount: function(){
+		_undoCountSetter: function(){
 			// summary:
 			//		Attribute setter for undoCount
 			console.warn("CommandStack: undoCount is a read-only attribute");
 		},
 		
-		_get_redoCount: function(){
+		_redoCountGetter: function(){
 			// summary:
 			//		Attribute getter for redoCount
 			return this._redoStack.length;

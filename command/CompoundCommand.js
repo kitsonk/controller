@@ -1,8 +1,9 @@
 define([
 		"dojo/_base/declare", // declare
 		"dojo/_base/array", // array.forEach
-		"../Attributed"
-], function(declare, array, Attributed){
+		"dojo/Stateful",
+		"dojo/Evented"
+], function(declare, array, Stateful, Evented){
 
 // module:
 //		dojo-controller/command/CompoundCommand
@@ -10,7 +11,7 @@ define([
 //		An object that allows the combination of several 
 //		commands into a single command.
 
-	return declare([Attributed], {
+	return declare([Stateful, Evented], {
 		
 		name: "",
 		type: "compound",
@@ -62,19 +63,17 @@ define([
 			return results;
 		},
 		
-		_get_count: function(){
+		_countGetter: function(){
 			return this._commands.length;
 		},
-		
-		_set_count: function(value){
+		_countSetter: function(value){
 			console.warn("CompoundCommand: count is a read-only attribute.");
 		},
 		
-		_get_context: function(){
+		_contextGetter: function(){
 			return this._context;
 		},
-		
-		_set_context: function(value){
+		_contextSetter: function(value){
 			this._context = value;
 			for(var i = 0; i < this._commands.length; i++){
 				this._commands[i].set("context", this._context);
