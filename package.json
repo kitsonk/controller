@@ -1,5 +1,5 @@
 {
-  "name": "dojo-controller",
+  "name": "controller",
   "version": "1.8.0dev",
   "main": "main",
   "dependencies": {
@@ -16,6 +16,6 @@
       "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L13"
     }
   ],
-	"bugs": "https://github.com/kitsonk/dojo-controller",
-	"dojoBuild": "dojo-controller.profile.js"
+	"bugs": "https://github.com/kitsonk/controller",
+	"dojoBuild": "controller.profile.js"
 }
