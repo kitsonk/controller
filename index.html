@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>controller by kitsonk</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>controller</h1>
+        <p>Commands and Action Abstractions for Dojo</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/kitsonk/controller" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/kitsonk/controller/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/kitsonk/controller/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h2>Welcome to controller.</h2>
+
+<p><strong>controller</strong> is a <a href="http://dojotoolkit.org/">Dojo Toolkit</a> based package that is designed to provide some intelligence to bridge the gap between application logic and the user interface representation of that logic.  It is a package where its modules fit alongside a Dojo distribution.  It is has the following modules:</p>
+
+<h3>controller/command/Command</h3>
+
+<p>This class is designed to encapsulate a piece of code which can be <code>.execute()</code> and potentially <code>.undo()</code>.</p>
+
+<h3>controller/command/CompoundCommand</h3>
+
+<p>This class is designed combine multiple commands into a single command.</p>
+
+<h3>controller/command/CommandStack</h3>
+
+<p>This class is designed to allow <code>Command</code>s to be <code>.execute()</code>, <code>.undo()</code> and <code>.redo()</code> in a ordered stack.  This provides the logic to enable an "undo"/"redo" history, where each <code>Command</code> executed by the <code>CommandStack</code> will be pushed onto the stack.  You can also <code>.jump()</code> to a particular point in the stack.</p>
+
+<h3>controller/action/Action</h3>
+
+<p>This is the "bridge" between a visual widget and code.  <code>Action</code>s are designed to be <code>.bind()</code> to widgets.  Once bound, properties of the <code>Action</code> will be propagated to the widget and when the widget is "actioned" (usually when it is clicked) the <code>Action</code> will <code>.run()</code>.  If the <code>Action</code> is assigned a <code>Command</code> it will be <code>.execute()</code> and if there is also a <code>CommandStack</code> it will be pushed onto the <code>CommandStack</code> to provide the "undo/redo" functionality.</p>
+
+<p><code>Action</code> can be instantiated itself, or subclassed for further modification.</p>
+
+<h3>Notes</h3>
+
+<p>All of the classes are built upon <code>dojo/Stateful</code> and <code>dojo/Evented</code>.  This gives them the support for both robust property features including <code>.set()</code>, <code>.get()</code> and <code>.when()</code> as well as the classes emit events as appropriate.</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/kitsonk">kitsonk</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
