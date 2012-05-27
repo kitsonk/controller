@@ -1,6 +1,6 @@
 define([
-	"dojo-controller/tests/command/Command",
-	"dojo-controller/tests/command/CommandStack",
-	"dojo-controller/tests/command/CompoundCommand",
-	"dojo-controller/tests/action/Action"
+	"controller/tests/command/Command",
+	"controller/tests/command/CommandStack",
+	"controller/tests/command/CompoundCommand",
+	"controller/tests/action/Action"
 ], 1);

@@ -136,7 +136,7 @@ doh.register("tests.action.Action",
 );
 
 if(doh.isBrowser){
-	doh.register("tests.action.Action_html", require.toUrl("../../dojo-controller/tests/action/Action.html"));
+	doh.register("tests.action.Action_html", require.toUrl("../../controller/tests/action/Action.html"));
 }
 
 });
