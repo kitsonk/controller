@@ -15,7 +15,7 @@ This code is inspired by modules from `Maqetta <http://maqetta.org/>`_.
 Copyright/License/Contribution
 ==============================
 
-This code is Copyright &copy; 2011-2012 The Dojo Foundation and is Liscensed under the `New BSD License </kitsonk/controller/blob/master/LISCENSE>`_.
+This code is Copyright &copy; 2011-2012 The Dojo Foundation and is Liscensed under the `New BSD License </kitsonk/controller/blob/master/LICENSE>`_.
 
 Contrubition requires a Dojo Foundation `Contributors License Agreement <http://dojofoundation.org/about/cla>`_.
 
