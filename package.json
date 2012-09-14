@@ -1,21 +1,37 @@
 {
   "name": "controller",
-  "version": "1.8.0dev",
-  "main": "main",
-  "dependencies": {
-    "dojo": "current"
-	},
-	"description": "Modules that provide controller abstraction for widgets.",
-	"licenses": [
-	  {
-	    "type": "AFLv2.1",
-	    "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L43"
-    },
-    {
+  "description": "Commands and Action Abstractions for Dojo",
+  "version": "1.8.0",
+  "maintainers": [{
+      "name": "Kitson Kelly"
+  }],
+  "contributors": [{
+      "name": "Kitson Kelly"
+  }],
+  "licenses": [{
       "type": "BSD",
-      "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L13"
-    }
+      "url": "https://github.com/kitsonk/controller/blob/master/LICENSE"
+  }],
+  "directories": {
+    "src": "./src"
+  },
+  "bugs": "https://github.com/kitsonk/controller/issues",
+  "homepage": "https://github.com/kitsonk/controller/",
+  "repositories": [{
+      "type": "git",
+      "url": "https://github.com/kitsonk/controller.git",
+      "path": "src/controller"
+  }],
+  "main": "./main.js",
+  "readme": "\n# controller #\n\nCommands and Action Abstractions for Dojo",
+  "keywords": [
+    "JavaScript",
+    "Dojo",
+    "Actions",
+    "Commands"
   ],
-	"bugs": "https://github.com/kitsonk/controller",
-	"dojoBuild": "controller.profile.js"
+  "dependencies": {
+    "dojo": "~1.8.0"
+  },
+  "dojoBuild": "controller.profile.js"
 }

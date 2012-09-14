@@ -10,7 +10,14 @@ controller Overview
 **controller** is a Dojo based package that implements the concepts of Commands and Actions in order to allow
 developers to easily abstract and centralise their control code in an application.
 
-This code is based on modules from `Maqetta <http://maqetta.org/>`_.
+This code is inspired by modules from `Maqetta <http://maqetta.org/>`_.
+
+Copyright/License/Contribution
+==============================
+
+This code is Copyright &copy; 2011-2012 The Dojo Foundation and is Liscensed under the `New BSD License </kitsonk/controller/blob/master/LISCENSE>`_.
+
+Contrubition requires a Dojo Foundation `Contributors License Agreement <http://dojofoundation.org/about/cla>`_.
 
 controller/command
 ==================
