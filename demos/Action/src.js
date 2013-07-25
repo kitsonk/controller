@@ -6,9 +6,9 @@ require([
 	"dojo/_base/lang", // lang.setObject
 	"dojo/dom-style", // style.set
 	"dijit/registry", // registry.byId
-	"dojo-controller/action/Action",
-	"dojo-controller/command/Command",
-	"dojo-controller/command/CommandStack",
+	"controller/action/Action",
+	"controller/command/Command",
+	"controller/command/CommandStack",
 	"dijit/layout/ContentPane", 
 	"dijit/form/Button",
 	"dijit/form/ToggleButton",
