@@ -49,8 +49,7 @@ body{
 pre {
 	white-space: pre-wrap;
 	white-space: -moz-pre-wrap;
-	white-space: -webkit-pre-wrap;
-	white-space: o-pre-wrap;
+	white-space: -o-pre-wrap;
 	font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
 	overflow: auto;
 	padding: 1em;

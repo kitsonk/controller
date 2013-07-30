@@ -31,7 +31,7 @@
     "Commands"
   ],
   "dependencies": {
-    "dojo": "~1.8.0"
+    "dojo": ">1.8.0"
   },
   "dojoBuild": "controller.profile.js"
 }
